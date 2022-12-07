@@ -7,77 +7,77 @@ using UnityEngine;
 // Create : 2022. 12. 05.
 // Update : 2022. 12. 05.
 
-public class PlayerMovement : PlayerRequire
+public class PlayerMovement : PlayerRequire, IMovement
 {
     [Serializable]
     public class SensorOption
     {
-        [Tooltip("Áö¸éÀ¸·Î ÆÇÁ¤ÇÒ ·¹ÀÌ¾î")]
+        [Tooltip("ì§€ë©´ìœ¼ë¡œ íŒì •í•  ë ˆì´ì–´")]
         public LayerMask groundMask = -1;
 
-        [Range(0.01f, 0.5f), Tooltip("Àü¹æ °¨Áö ¼¾¼­ °Å¸®")]
+        [Range(0.01f, 0.5f), Tooltip("ì „ë°© ê°ì§€ ì„¼ì„œ ê±°ë¦¬")]
         public float forwardSensorDistance = 0.1f;
 
-        [Range(0.1f, 10.0f), Tooltip("Áö¸é °¨Áö ¼¾¼­ °Å¸®")]
+        [Range(0.1f, 10.0f), Tooltip("ì§€ë©´ ê°ì§€ ì„¼ì„œ ê±°ë¦¬")]
         public float groundSensorDistance = 2.0f;
 
-        [Range(0.0f, 0.1f), Tooltip("Áö¸éÀ¸·Î °¨Áö ÇÒ Çã¿ëÄ¡")]
+        [Range(0.0f, 0.1f), Tooltip("ì§€ë©´ìœ¼ë¡œ ê°ì§€ í•  í—ˆìš©ì¹˜")]
         public float groundThreshold = 0.01f;
     }
 
     [Serializable]
     public class MovementOption
     {
-        [Range(1.0f, 10.0f), Tooltip("ÀÌµ¿¼Óµµ")]
+        [Range(1.0f, 10.0f), Tooltip("ì´ë™ì†ë„")]
         public float moveSpeed = 5.0f;
 
-        [Range(1.0f, 3.0f), Tooltip("´Ş¸®±â °¡¼Ó °è¼ö")]
+        [Range(1.0f, 3.0f), Tooltip("ë‹¬ë¦¬ê¸° ê°€ì† ê³„ìˆ˜")]
         public float dashCoef = 1.5f;
 
-        [Range(1.0f, 3.0f), Tooltip("°È±â¸ğµå °¨¼Ó °è¼ö")]
+        [Range(1.0f, 3.0f), Tooltip("ê±·ê¸°ëª¨ë“œ ê°ì† ê³„ìˆ˜")]
         public float walkCoef = 1.5f;
 
-        [Range(1.0f, 10.0f), Tooltip("Á¡ÇÁ °­µµ")]
+        [Range(1.0f, 10.0f), Tooltip("ì í”„ ê°•ë„")]
         public float jumpForce = 5.0f;
 
-        [Range(0.0f, 2.0f), Tooltip("Á¡ÇÁ ÄğÅ¸ÀÓ")]
+        [Range(0.0f, 2.0f), Tooltip("ì í”„ ì¿¨íƒ€ì„")]
         public float jumpCoolTime = 0.5f;
 
-        [Range(0, 3), Tooltip("Á¡ÇÁ Çã¿ë È½¼ö")]
+        [Range(0, 3), Tooltip("ì í”„ í—ˆìš© íšŸìˆ˜")]
         public int maxJumpCount = 1;
 
-        [Range(1.0f, 75.0f), Tooltip("°É¾î¼­ ¿Ã¶ó°¥ ¼ö ÀÖ´Â ÃÖ´ë °æ»ç°¢")]
+        [Range(1.0f, 75.0f), Tooltip("ê±¸ì–´ì„œ ì˜¬ë¼ê°ˆ ìˆ˜ ìˆëŠ” ìµœëŒ€ ê²½ì‚¬ê°")]
         public float maxSlopeAngle = 50.0f;
 
-        [Range(0.0f, 4.0f), Tooltip("°æ»ç·Î ÀÌµ¿ °¡¼Óµµ")]
+        [Range(0.0f, 4.0f), Tooltip("ê²½ì‚¬ë¡œ ì´ë™ ê°€ì†ë„")]
         public float slopeAccel = 1.0f;
 
-        [Range(-9.81f, 0.0f), Tooltip("Áß·Â °ª")]
+        [Range(-9.81f, 0.0f), Tooltip("ì¤‘ë ¥ ê°’")]
         public float gravity = -9.81f;
     }
 
     [Serializable]
     public class CurrentMovement
     {
-        [Header("ÇöÀç ÀÌµ¿ °ª")]
+        [Header("í˜„ì¬ ì´ë™ ê°’")]
         public Vector3 worldDirection;
         public Vector3 groundNormal;
         public Vector3 groundCross;
         public Vector3 horizontalVelocity;
 
-        [Space, Header("ÇöÀç Á¡ÇÁ °ª")]
+        [Space, Header("í˜„ì¬ ì í”„ ê°’")]
         public float jumpCoolTime;
         public int jumpCount;
         public float outOfControlDuration;
 
-        [Space, Header("ÇöÀç Á¢ÁöÇÑ Áö¸é Á¤º¸")]
+        [Space, Header("í˜„ì¬ ì ‘ì§€í•œ ì§€ë©´ ì •ë³´")]
         public float groundDistance;
-        public float slopeAngle; // ÇöÀç ¹Ù´Ú °æ»ç
-        public float verticalSlopeAngle; // ¼öÁ÷ Àç¿¬»ê °ª
-        public float forwardSlopeAngle; // ¹Ù¶óº¸´Â ¹æÇâÀÇ °æ»ç°¢
-        public float slopeAccel; // °æ»ç·Î °¡¼Óµµ
+        public float slopeAngle; // í˜„ì¬ ë°”ë‹¥ ê²½ì‚¬
+        public float verticalSlopeAngle; // ìˆ˜ì§ ì¬ì—°ì‚° ê°’
+        public float forwardSlopeAngle; // ë°”ë¼ë³´ëŠ” ë°©í–¥ì˜ ê²½ì‚¬ê°
+        public float slopeAccel; // ê²½ì‚¬ë¡œ ê°€ì†ë„
 
-        [Space, Header("ÇöÀç Áß·Â °ª")]
+        [Space, Header("í˜„ì¬ ì¤‘ë ¥ ê°’")]
         public float gravity;
     }
 
@@ -110,16 +110,19 @@ public class PlayerMovement : PlayerRequire
 
         SetPhysics();
         SetValues();
+
+        CalculateMovement();
+        ApplyMovement();
     }
 
-    // ÀÌµ¿ ºÒ´É »óÅÂ ¼¼ÆÃ
+    // ì´ë™ ë¶ˆëŠ¥ ìƒíƒœ ì„¸íŒ…
     public void SetOutOfControl(float time)
     {
         Current.outOfControlDuration = time;
         ResetJump();
     }
 
-    // Á¡ÇÁ ÃÊ±âÈ­
+    // ì í”„ ì´ˆê¸°í™”
     private void ResetJump()
     {
         Current.jumpCoolTime = 0.0f;
@@ -128,7 +131,7 @@ public class PlayerMovement : PlayerRequire
         State.isJumpTrig = false;
     }
 
-    // ÇÏ´Ü °¨Áö ¼¾¼­
+    // í•˜ë‹¨ ê°ì§€ ì„¼ì„œ
     private void GroundSensor()
     {
         Current.groundDistance = float.MaxValue;
@@ -136,45 +139,45 @@ public class PlayerMovement : PlayerRequire
         Current.slopeAngle = 0.0f;
         Current.forwardSlopeAngle = 0.0f;
 
-        // ÇÏ´Ü¿¡ ±¸Ã¼ ·¹ÀÌ ¹ß»ç
+        // í•˜ë‹¨ì— êµ¬ì²´ ë ˆì´ ë°œì‚¬
         bool cast = 
             Physics.SphereCast(capsuleBottom, castRadius, Vector3.down, out var hit, Sensor.groundSensorDistance, Sensor.groundMask, QueryTriggerInteraction.Ignore);
 
-        State.isGrounded = false; // Áö¸é Á¢Áö ¿©ºÎ ÃÊ±âÈ­
+        State.isGrounded = false; // ì§€ë©´ ì ‘ì§€ ì—¬ë¶€ ì´ˆê¸°í™”
 
-        // Áö¸é Á¢Áö »óÅÂÀÏ ¶§
+        // ì§€ë©´ ì ‘ì§€ ìƒíƒœì¼ ë•Œ
         if (cast)
         {
-            // Áö¸é ¹ı¼±º¤ÅÍ ÃÊ±âÈ­
+            // ì§€ë©´ ë²•ì„ ë²¡í„° ì´ˆê¸°í™”
             Current.groundNormal = hit.normal;
 
-            // ÇöÀç °æ»ç°¢ °è»ê
+            // í˜„ì¬ ê²½ì‚¬ê° ê³„ì‚°
             Current.slopeAngle = Vector3.Angle(Current.groundNormal, Vector3.up);
             Current.forwardSlopeAngle = Vector3.Angle(Current.groundNormal, Current.worldDirection) - 90.0f;
 
-            // ÀÌµ¿°¡´É °æ»ç°¢ Ã¼Å©
+            // ì´ë™ê°€ëŠ¥ ê²½ì‚¬ê° ì²´í¬
             State.isUnableMoveSlope = Current.slopeAngle >= MoveOption.maxSlopeAngle;
 
-            // Áö¸é°úÀÇ °Å¸® °è»ê
+            // ì§€ë©´ê³¼ì˜ ê±°ë¦¬ ê³„ì‚°
             Current.groundDistance = Mathf.Max(hit.distance - capsuleRadiusDiff - Sensor.groundThreshold, 0.0f);
             
-            // Áö¸é Á¢Áö ¿©ºÎ Ã¼Å©
+            // ì§€ë©´ ì ‘ì§€ ì—¬ë¶€ ì²´í¬
             State.isGrounded =
                 (Current.groundDistance <= 0.0001f) && !State.isUnableMoveSlope;
 
         }
-        // ¼öÁ÷º¤ÅÍ¿Í °æ»ç°¢ ¹ı¼±º¤ÅÍ ¿ÜÀû
+        // ìˆ˜ì§ë²¡í„°ì™€ ê²½ì‚¬ê° ë²•ì„ ë²¡í„° ì™¸ì 
         Current.groundCross = Vector3.Cross(Current.groundNormal, Vector3.up);
     }
 
-    // Àü¹æ °¨Áö ¼¾¼­
+    // ì „ë°© ê°ì§€ ì„¼ì„œ
     private void ForwardSensor()
     {
         bool cast =
             Physics.CapsuleCast(capsuleBottom, capsuleTop, castRadius, Current.worldDirection + Vector3.down * 0.1f,
             out var hit, Sensor.forwardSensorDistance, -1, QueryTriggerInteraction.Ignore);
 
-        State.isBlocked = false; // Àü¹æ Àå¾Ö¹° ¿©ºÎ ÃÊ±âÈ­
+        State.isBlocked = false; // ì „ë°© ì¥ì• ë¬¼ ì—¬ë¶€ ì´ˆê¸°í™”
 
         if (cast)
         {
@@ -183,23 +186,23 @@ public class PlayerMovement : PlayerRequire
         }
     }
 
-    // ¹°¸® Çö»ó ¼¼ÆÃ
+    // ë¬¼ë¦¬ í˜„ìƒ ì„¸íŒ…
     private void SetPhysics()
     {
         if (State.isGrounded)
         {
-            Current.gravity = 0.0f; // Áß·Â ¹ÌÀû¿ë
+            Current.gravity = 0.0f; // ì¤‘ë ¥ ë¯¸ì ìš©
 
             Current.jumpCount = 0;
             State.isJumping = false;
         }
         else
         {
-            Current.gravity += fixedDelta * MoveOption.gravity; // Áß·Â Àû¿ë
+            Current.gravity += fixedDelta * MoveOption.gravity; // ì¤‘ë ¥ ì ìš©
         }
     }
 
-    //°ª ¼¼ÆÃ
+    //ê°’ ì„¸íŒ…
     private void SetValues()
     {
         if (Current.jumpCoolTime > Mathf.Epsilon)
@@ -214,5 +217,125 @@ public class PlayerMovement : PlayerRequire
             Current.outOfControlDuration -= fixedDelta;
             Current.worldDirection = Vector3.zero;
         }
+    }
+
+    // ì´ë™ê´€ë ¨ ê°’ ì—°ì‚°
+    private void CalculateMovement()
+    {
+        // ì œì–´ë¶ˆê°€ ìƒíƒœì¼ ê²½ìš°
+        if (State.isOutOfControl)
+        {
+            Current.horizontalVelocity = Vector3.zero;
+            return;
+        }
+
+        // ì í”„ íŠ¸ë¦¬ê±° í™œì„±í™” í›„ ì í”„ ì‚¬ìš© ê°€ëŠ¥ ìƒíƒœì¸ ê²½ìš°
+        if (State.isJumpTrig && Current.jumpCoolTime <= 0.0f)
+        {
+            Current.gravity = MoveOption.jumpForce;
+
+            // ì í”„ ì¿¨íƒ€ì„ ì ìš©, íŠ¸ë¦¬ê±° ì´ˆê¸°í™”
+            Current.jumpCoolTime = MoveOption.jumpCoolTime;
+            State.isJumpTrig = false;
+            State.isJumping = true;
+
+            ++Current.jumpCount;
+        }
+
+        // XZí‰ë©´ ì´ë™ì†ë„ ì—°ì‚°
+        // ì „ë°©ì´ ë§‰í˜€ìˆê³  ì§€ë©´ ì ‘ì§€ìƒíƒœê°€ ì•„ë‹Œê²½ìš° í˜¹ì€ ì í”„ì¤‘ì´ë©´ì„œ ì§€ë©´ ì ‘ì§€ ìƒíƒœì¼ ê²½ìš°
+        if (State.isBlocked && !State.isGrounded || State.isJumping && State.isGrounded)
+        {
+            Current.horizontalVelocity = Vector3.zero;
+        }
+        // ì´ë™ ê°€ëŠ¥í•œ ê²½ìš°
+        else
+        {
+            // ì´ë™ì¤‘ì´ ì•„ë‹Œ ê²½ìš° 0, ë‹¬ë¦¬ëŠ” ì¤‘ì´ ì•„ë‹ˆë©´ ì¼ë°˜ ì†ë„, ëª¨ë‘ ë§ë‹¤ë©´ ê³„ìˆ˜ ì ìš©
+            float speed = !State.isMoving ? 0.0f :
+                !State.isRunning ? MoveOption.moveSpeed :
+                MoveOption.moveSpeed * MoveOption.dashCoef;
+
+            // ì´ë™ì†ë„ ì ìš©
+            Current.horizontalVelocity = Current.worldDirection * speed;
+        }
+
+        // XZí‰ë©´ íšŒì „
+        // ì§€ë©´ ì ‘ì§€ìƒíƒœì´ê±°ë‚˜ ì§€ë©´ì— ê°€ê¹Œìš´ ê²½ìš°
+        if (State.isGrounded || Current.groundDistance < Sensor.groundSensorDistance && !State.isJumping)
+        {
+            // ì´ë™ì¤‘ì´ê³  ì „ë°©ì´ ë§‰íˆì§€ ì•Šì€ ê²½ìš°
+            if (State.isMoving && !State.isBlocked)
+            {
+                // ê²½ì‚¬ë¡œ ê°€ê°
+                if (MoveOption.slopeAccel > 0.0f)
+                {
+                    bool isPlus = Current.forwardSlopeAngle >= 0.0f;
+                    float absAngle = isPlus ? Current.forwardSlopeAngle : -Current.forwardSlopeAngle;
+                    float accel = MoveOption.slopeAccel * absAngle * 0.01111f + 1.0f;
+                    Current.slopeAccel = !isPlus ? accel : 1.0f / accel;
+
+                    Current.horizontalVelocity *= Current.slopeAccel;
+                }
+
+                // ê²½ì‚¬ë¡œ ì´ë™ ë²¡í„° íšŒì „
+                Current.horizontalVelocity =
+                    Quaternion.AngleAxis(-Current.slopeAngle, Current.groundCross) * Current.horizontalVelocity;
+            }
+        }
+    }
+
+    // ìµœì¢… ê°’ ì ìš©
+    private void ApplyMovement()
+    {
+        // ì œì–´ ë¶ˆê°€ ìƒíƒœì¼ ê²½ìš°
+        if (State.isOutOfControl)
+        {
+            Compo.rigd.velocity = new Vector3(Compo.rigd.velocity.x, Current.gravity, Compo.rigd.velocity.z);
+            return;
+        }
+
+        // ë¬¼ë¦¬ ìš´ë™ëŸ‰ = í˜„ì¬ ì´ë™ ë°©í–¥ + Yì¶• ì¤‘ë ¥
+        Compo.rigd.velocity = Current.horizontalVelocity + Vector3.up * (Current.gravity);
+    }
+
+    public bool IsMoving() => State.isMoving;
+    public bool IsGrounded() => State.isGrounded;
+    public float GetDistanceFormGround() => Current.groundDistance;
+
+    public void SetMovement(in Vector3 worldDirection, bool isRunning)
+    {
+        Current.worldDirection = worldDirection;
+        State.isMoving = worldDirection.sqrMagnitude > 0.01f;
+        State.isRunning = isRunning;
+    }
+
+    public bool TryJump()
+    {
+        // ì²« ì í”„ ì˜ˆì™¸ ì²˜ë¦¬
+        if (!State.isGrounded && Current.jumpCount == 0) return false;
+
+        // ì í”„ ì¿¨íƒ€ì„, íšŸìˆ˜ ê²€ì‚¬
+        if (Current.jumpCoolTime > Mathf.Epsilon) return false;
+        if (Current.jumpCount >= MoveOption.maxJumpCount) return false;
+
+        // ì´ë™ ë¶ˆê°€ ê²½ì‚¬ë¡œì—ì„œ ì í”„ ë¶ˆê°€
+        if (State.isUnableMoveSlope) return false;
+
+        State.isJumpTrig = true;
+        return true;
+    }
+
+    public void StopMove()
+    {
+        Current.worldDirection = Vector3.zero;
+        State.isMoving = false;
+        State.isRunning = false;
+    }
+
+    public void KnockBack(in Vector3 force, float time)
+    {
+        SetOutOfControl(time);
+        Compo.rigd.AddForce(force, ForceMode.Impulse);
     }
 }

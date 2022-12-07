@@ -9,43 +9,44 @@ using UnityEngine;
 
 public abstract class PlayerRequire : MonoBehaviour
 {
-    // ¿É¼Ç Å¬·¡½º
+    // ì˜µì…˜ í´ë˜ìŠ¤
     [Serializable]
     public class Components
     {
         [HideInInspector] public Animator anim;
         [HideInInspector] public Rigidbody rigd;
         [HideInInspector] public CapsuleCollider capsule;
+        [HideInInspector] public CameraController playerCam;
     }
 
     [Serializable]
     public class KeyOption
     {
-        // ÀÌµ¿
+        // ì´ë™
         public KeyCode moveForward = KeyCode.W;
         public KeyCode moveBackward = KeyCode.S;
         public KeyCode moveLeft = KeyCode.A;
         public KeyCode moveRight = KeyCode.D;
 
-        public KeyCode jump = KeyCode.Space; // Á¡ÇÁ
-        public KeyCode dash = KeyCode.LeftShift; // ´ë½¬
-        public KeyCode walkMod = KeyCode.LeftControl; // °È±â¸ğµå ÀüÈ¯
+        public KeyCode jump = KeyCode.Space; // ì í”„
+        public KeyCode dash = KeyCode.LeftShift; // ëŒ€ì‰¬
+        public KeyCode walkMod = KeyCode.LeftControl; // ê±·ê¸°ëª¨ë“œ ì „í™˜
     }
 
     [Serializable]
     public class StateOption
     {
-        public bool isMoving; // °È´Â Áß
-        public bool isRunning; // ¶Ù´Â Áß
-        public bool isGrounded; // Áö¸é Á¢Áö
-        public bool isUnableMoveSlope; // °É¾î¼­ µî¹İ ºÒ°¡´ÉÇÑ °æ»ç·Î¿¡ ÀÖ´Â °æ¿ì
-        public bool isJumpTrig; // Á¡ÇÁ Æ®¸®°Å
-        public bool isJumping; // Á¡ÇÁ Áß
-        public bool isBlocked; // Àü¹æ¿¡ Àå¾Ö¹° Á¸Àç
-        public bool isOutOfControl; // Á¦¾îºÒ°¡ »óÅÂ
+        public bool isMoving; // ê±·ëŠ” ì¤‘
+        public bool isRunning; // ë›°ëŠ” ì¤‘
+        public bool isGrounded; // ì§€ë©´ ì ‘ì§€
+        public bool isUnableMoveSlope; // ê±¸ì–´ì„œ ë“±ë°˜ ë¶ˆê°€ëŠ¥í•œ ê²½ì‚¬ë¡œì— ìˆëŠ” ê²½ìš°
+        public bool isJumpTrig; // ì í”„ íŠ¸ë¦¬ê±°
+        public bool isJumping; // ì í”„ ì¤‘
+        public bool isBlocked; // ì „ë°©ì— ì¥ì• ë¬¼ ì¡´ì¬
+        public bool isOutOfControl; // ì œì–´ë¶ˆê°€ ìƒíƒœ
     }
 
-    // ÇÊµå & ÇÁ·ÎÆÛÆ¼
+    // í•„ë“œ & í”„ë¡œí¼í‹°
     [SerializeField] private Components _compo = new Components();
     [SerializeField] private KeyOption _key = new KeyOption();
     [SerializeField] private StateOption _state = new StateOption();
@@ -54,29 +55,30 @@ public abstract class PlayerRequire : MonoBehaviour
     public KeyOption Key => _key;
     public StateOption State => _state;
 
-    protected float castRadius; // Ä¸½¶ Ä³½ºÆ® ¹İÁö¸§°ª
-    protected float capsuleRadiusDiff; // ÆÇÁ¤ º¸Á¤Ä¡
+    protected float castRadius; // ìº¡ìŠ ìºìŠ¤íŠ¸ ë°˜ì§€ë¦„ê°’
+    protected float capsuleRadiusDiff; // íŒì • ë³´ì •ì¹˜
 
     protected virtual void InitializeComponent()
     {
         InitRigidBody();
         InitCapsuleCollider();
         Compo.anim = GetComponentInChildren<Animator>();
+        Compo.playerCam = GetComponentInChildren<CameraController>();
     }
 
-    // ¸®Áöµå¹Ùµğ ÄÄÆ÷³ÍÆ® ¼³Á¤
+    // ë¦¬ì§€ë“œë°”ë”” ì»´í¬ë„ŒíŠ¸ ì„¤ì •
     private void InitRigidBody()
     {
         TryGetComponent(out Compo.rigd);
         if (Compo.rigd == null) Compo.rigd = gameObject.AddComponent<Rigidbody>();
 
-        Compo.rigd.constraints = RigidbodyConstraints.FreezeRotation; // ¹°¸® È¸Àü Á¦ÇÑ
-        Compo.rigd.interpolation = RigidbodyInterpolation.Interpolate; // Çö ÇÁ·¹ÀÓ°ú ´ÙÀ½ ÇÁ·¹ÀÓ »çÀÌÀÇ ·£´õ¸µ Â÷ÀÌ¸¦ ¼±Çüº¸°£
-        Compo.rigd.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic; // Ãæµ¹ÆÇÁ¤ ÃßÁ¤ È°¼ºÈ­
-        Compo.rigd.useGravity = false; // Áß·Â ¼öµ¿Á¦¾î¸¦ À§ÇÑ ¿É¼Ç ºñÈ°¼ºÈ­
+        Compo.rigd.constraints = RigidbodyConstraints.FreezeRotation; // ë¬¼ë¦¬ íšŒì „ ì œí•œ
+        Compo.rigd.interpolation = RigidbodyInterpolation.Interpolate; // í˜„ í”„ë ˆì„ê³¼ ë‹¤ìŒ í”„ë ˆì„ ì‚¬ì´ì˜ ëœë”ë§ ì°¨ì´ë¥¼ ì„ í˜•ë³´ê°„
+        Compo.rigd.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic; // ì¶©ëŒíŒì • ì¶”ì • í™œì„±í™”
+        Compo.rigd.useGravity = false; // ì¤‘ë ¥ ìˆ˜ë™ì œì–´ë¥¼ ìœ„í•œ ì˜µì…˜ ë¹„í™œì„±í™”
     }
 
-    // Ä¸½¶ Äİ¶óÀÌ´õ ¼³Á¤
+    // ìº¡ìŠ ì½œë¼ì´ë” ì„¤ì •
     private void InitCapsuleCollider()
     {
         TryGetComponent(out Compo.capsule);
@@ -84,13 +86,13 @@ public abstract class PlayerRequire : MonoBehaviour
         {
             Compo.capsule = gameObject.AddComponent<CapsuleCollider>();
 
-            float height = -1f; // Äİ¶óÀÌ´õ ³ôÀÌ
+            float height = -1f; // ì½œë¼ì´ë” ë†’ì´
 
-            var skinMeshArray = GetComponentsInChildren<SkinnedMeshRenderer>(); // ÇÃ·¹ÀÌ¾î ¸ğµ¨ÀÇ ½ºÅ² ¸Ş½Ã ·£´õ·¯ ¹è¿­ °¡Á®¿À±â
-            // ½ºÅ² ¸Ş½Ã ·£´õ·¯¸¦ »ç¿ëÇÏ´Â °æ¿ì
+            var skinMeshArray = GetComponentsInChildren<SkinnedMeshRenderer>(); // í”Œë ˆì´ì–´ ëª¨ë¸ì˜ ìŠ¤í‚¨ ë©”ì‹œ ëœë”ëŸ¬ ë°°ì—´ ê°€ì ¸ì˜¤ê¸°
+            // ìŠ¤í‚¨ ë©”ì‹œ ëœë”ëŸ¬ë¥¼ ì‚¬ìš©í•˜ëŠ” ê²½ìš°
             if (skinMeshArray.Length > 0)
             {
-                // ¸ğµç ¸Ş½Ã Å½»ö
+                // ëª¨ë“  ë©”ì‹œ íƒìƒ‰
                 foreach (var mesh in skinMeshArray)
                 {
                     foreach (var vertex in mesh.sharedMesh.vertices)
@@ -102,13 +104,13 @@ public abstract class PlayerRequire : MonoBehaviour
                     }
                 }
             }
-            // ¸Ş½Ã ·£´õ·¯¸¦ »ç¿ëÇÏ´Â °æ¿ì
+            // ë©”ì‹œ ëœë”ëŸ¬ë¥¼ ì‚¬ìš©í•˜ëŠ” ê²½ìš°
             else
             {
                 var meshFilterArray = GetComponentsInChildren<MeshFilter>();
                 if (meshFilterArray.Length > 0)
                 {
-                    // ¸ğµç ¸Ş½Ã Å½»ö
+                    // ëª¨ë“  ë©”ì‹œ íƒìƒ‰
                     foreach (var mesh in meshFilterArray)
                     {
                         foreach (var vertex in mesh.mesh.vertices)
@@ -122,13 +124,13 @@ public abstract class PlayerRequire : MonoBehaviour
                 }
             }
 
-            // ³ôÀÌ°ªÀÌ 0º¸´Ù ÀÛÀ» °æ¿ì 1·Î ÃÊ±âÈ­
+            // ë†’ì´ê°’ì´ 0ë³´ë‹¤ ì‘ì„ ê²½ìš° 1ë¡œ ì´ˆê¸°í™”
             if (height <= 0)
             {
                 height = 1.0f;
             }
 
-            float center = height * 0.5f; // Áß½ÉÁ¡ ÃÊ±âÈ­
+            float center = height * 0.5f; // ì¤‘ì‹¬ì  ì´ˆê¸°í™”
 
             Compo.capsule.height = height;
             Compo.capsule.center = Vector3.up * center;
