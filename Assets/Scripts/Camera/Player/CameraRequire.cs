@@ -39,10 +39,10 @@ public abstract class CameraRequire : MonoBehaviour
         [Tooltip("지면으로 인식 할 레이어")]
         public LayerMask groundMask = -1;
 
-        [Range(0.0f, 3.5f), Tooltip("줌인 최대 거리")]
+        [Range(0.0f, 7.5f), Tooltip("줌인 최대 거리")]
         public float zoomInDistance = 3.0f;
 
-        [Range(0.0f, 3.5f), Tooltip("줌아웃 최대 거리")]
+        [Range(0.0f, 7.5f), Tooltip("줌아웃 최대 거리")]
         public float zoomOutDistance = 3.0f;
 
         [Range(1.0f, 30.0f), Tooltip("줌 속도")]
@@ -62,9 +62,8 @@ public abstract class CameraRequire : MonoBehaviour
     public class CurrentValue
     {
         public float camInitDist; // 초기 거리 값
-        public float currentZoomDistance; // 현재 줌 거리
-        public float hitDist;
-        public Vector3 hitPoint; // 장애물에 걸렸을 때의 지점
+        public float zoomDistance; // 현재 줌 거리
+        public float camDistance; // 실제 카메라 거리
     }
 
     [SerializeField] private Components _compo = new Components();

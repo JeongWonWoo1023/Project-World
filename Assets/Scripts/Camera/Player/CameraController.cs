@@ -10,6 +10,7 @@ public class CameraController : CameraRequire
     private Vector2 rotation;
     private float wheelInput = 0; // 줌 기능 휠 입력 값
     private float lerpWheel; // 보간 된 휠 입력 값
+    private float zoomDelta;
 
     private void Start()
     {
@@ -39,33 +40,32 @@ public class CameraController : CameraRequire
         // 카메라의 종류가 많아지면 분리 실행 필요
         Compo.camObj.SetActive(true);
 
-        Current.camInitDist = Vector3.Distance(Compo.rig.position, Compo.cam.transform.position);
-        Current.currentZoomDistance = Current.camInitDist;
+        Current.camDistance = Current.zoomDistance = Current.camInitDist = Vector3.Distance(Compo.rig.position, Compo.cam.transform.position);
     }
 
     // 카메라가 항상 지면 위에 위치하게 설정
     private void SetOnTheGround()
     {
         Transform root = Compo.root, cam = Compo.camObj.transform;
-        float dist = Vector3.Distance(root.localPosition, cam.localPosition);
-        bool cast = Physics.Raycast(root.position, -cam.forward, out var hit, Current.currentZoomDistance, CamOption.groundMask);
-        State.isObstacle = cast;
-        if (cast)
+
+        State.isObstacle = Physics.Raycast(root.position, -cam.forward, out var hit, Current.zoomDistance + 2.0f, CamOption.groundMask);
+        if (State.isObstacle)
         {
-            Current.hitDist = Mathf.Clamp(hit.distance, 0, Current.currentZoomDistance);
-            if (dist > Current.hitDist)
+            // 현재 카메라의 거리 캐싱
+            Current.camDistance = Mathf.Clamp(Vector3.Distance(root.position, cam.position),
+                            Current.camInitDist - CamOption.zoomInDistance,
+                            Current.camInitDist + CamOption.zoomOutDistance);
+            if (Current.camDistance > Current.camInitDist - CamOption.zoomInDistance)
             {
-                cam.position = hit.point + (cam.forward * 0.5f);
+                cam.position = hit.point + cam.forward * 1.0f;
             }
         }
-        else if(Current.hitDist < Current.currentZoomDistance)
+        else if(Current.camDistance < Current.zoomDistance)
         {
-            float lerp = Mathf.Lerp(Current.hitDist, Current.currentZoomDistance, 0.001f);
+            float lerp = Mathf.Lerp(Current.camDistance, Current.zoomDistance, 0.001f);
             Vector3 move = Vector3.back * lerp * deltaTime;
-            if (dist < Current.currentZoomDistance)
-            {
-                cam.Translate(move, Space.Self);
-            }
+            cam.Translate(move, Space.Self);
+            Current.camDistance = Vector3.Distance(root.position, cam.position);
         }
 
     }
@@ -108,35 +108,80 @@ public class CameraController : CameraRequire
     {
         if (Mathf.Abs(lerpWheel) < 0.01f) return; // 휠 입력이 없을 경우 예외 처리
 
-        Transform camTrans = Compo.cam.transform;
+        Transform cam = Compo.cam.transform;
         Transform rig = Compo.rig;
 
         float zoomValue = deltaTime * CamOption.zoomSpeed; // 줌 적용 값
-        if (!State.isObstacle)
-        {
-            Current.currentZoomDistance = Mathf.Clamp(Vector3.Distance(camTrans.position, rig.position),
-                        Current.camInitDist - CamOption.zoomInDistance,
-                        Current.camInitDist + CamOption.zoomOutDistance);
-        }
-
         Vector3 move = Vector3.forward * zoomValue * lerpWheel * 10.0f; // 실제 이동 벡터
 
-        // 줌인
-        if (lerpWheel > 0.01f)
+        Current.zoomDistance = Mathf.Clamp(Current.camInitDist + zoomDelta,
+                        Current.camInitDist - CamOption.zoomInDistance,
+                        Current.camInitDist + CamOption.zoomOutDistance);
+
+        if (State.isObstacle)
         {
-            // 초기 거리 - 현재 거리 값이 줌인 한계치보다 낮을 경우
-            if (Current.camInitDist - Current.currentZoomDistance < CamOption.zoomInDistance)
+            if (lerpWheel > 0.01f)
             {
-                camTrans.Translate(move, Space.Self);
+                if (Current.camDistance > Current.camInitDist - CamOption.zoomInDistance)
+                {
+                    cam.Translate(move, Space.Self);
+                }
+            }
+            else if (lerpWheel < -0.01f)
+            {
+                if (Current.camDistance < Current.camInitDist + CamOption.zoomOutDistance)
+                {
+                    cam.Translate(move, Space.Self);
+                }
             }
         }
-        // 줌아웃
-        else if (lerpWheel < -0.01f)
+        else
         {
-            // 현재 거리 - 초기 거리 값이 줌아웃 한계치보다 낮을 경우
-            if (Current.currentZoomDistance - Current.camInitDist < CamOption.zoomOutDistance)
+            if (Current.camDistance < Current.zoomDistance)
             {
-                camTrans.Translate(move, Space.Self);
+                // 줌인
+                if (lerpWheel > 0.01f)
+                {
+                    // 초기 거리 - 현재 거리 값이 줌인 한계치보다 낮을 경우
+                    if (Current.camInitDist - Current.zoomDistance < CamOption.zoomInDistance)
+                    {
+                        zoomDelta -= move.magnitude;
+                    }
+                }
+                // 줌아웃
+                else if (lerpWheel < -0.01f)
+                {
+                    // 현재 거리 - 초기 거리 값이 줌아웃 한계치보다 낮을 경우
+                    if (Current.zoomDistance - Current.camInitDist < CamOption.zoomOutDistance)
+                    {
+                        zoomDelta += move.magnitude;
+                    }
+                }
+            }
+            else
+            {
+                Current.camDistance = Current.zoomDistance;
+
+                // 줌인
+                if (lerpWheel > 0.01f)
+                {
+                    // 초기 거리 - 현재 거리 값이 줌인 한계치보다 낮을 경우
+                    if (Current.camInitDist - Current.zoomDistance < CamOption.zoomInDistance)
+                    {
+                        cam.Translate(move, Space.Self);
+                        zoomDelta -= move.magnitude;
+                    }
+                }
+                // 줌아웃
+                else if (lerpWheel < -0.01f)
+                {
+                    // 현재 거리 - 초기 거리 값이 줌아웃 한계치보다 낮을 경우
+                    if (Current.zoomDistance - Current.camInitDist < CamOption.zoomOutDistance)
+                    {
+                        cam.Translate(move, Space.Self);
+                        zoomDelta += move.magnitude;
+                    }
+                }
             }
         }
     }
