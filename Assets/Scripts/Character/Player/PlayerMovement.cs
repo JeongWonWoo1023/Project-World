@@ -7,7 +7,7 @@ using UnityEngine;
 // Create : 2022. 12. 05.
 // Update : 2022. 12. 05.
 
-public class PlayerMovement : PlayerRequire, IMovement
+public class PlayerMovement : MonoBehaviour, IMovement
 {
     [Serializable]
     public class SensorOption

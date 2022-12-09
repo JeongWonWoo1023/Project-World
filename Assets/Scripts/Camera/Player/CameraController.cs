@@ -3,11 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraController : CameraRequire
+public class CameraController
 {
     private float deltaTime;
 
-    private Vector2 rotation;
     private float wheelInput = 0; // 줌 기능 휠 입력 값
     private float lerpWheel; // 보간 된 휠 입력 값
     private float zoomDelta;
@@ -62,7 +61,15 @@ public class CameraController : CameraRequire
         }
         else if(Current.camDistance < Current.zoomDistance)
         {
-            float lerp = Mathf.Lerp(Current.camDistance, Current.zoomDistance, 0.001f);
+            float lerp;
+            if (Current.camDistance < CamOption.zoomInDistance)
+            {
+                lerp = Mathf.Lerp(Current.camDistance, Current.zoomDistance, 0.5f);
+            }
+            else
+            {
+                lerp = Mathf.Lerp(Current.camDistance, Current.zoomDistance, 0.001f);
+            }
             Vector3 move = Vector3.back * lerp * deltaTime;
             cam.Translate(move, Space.Self);
             Current.camDistance = Vector3.Distance(root.position, cam.position);
@@ -73,7 +80,7 @@ public class CameraController : CameraRequire
     // 카메라 관련 입력 처리
     private void SetCameraInput()
     {
-        rotation = new Vector2(Input.GetAxisRaw("Mouse X"), -Input.GetAxisRaw("Mouse Y"));
+        Current.rotation = new Vector2(Input.GetAxisRaw("Mouse X"), -Input.GetAxisRaw("Mouse Y"));
         wheelInput = Input.GetAxisRaw("Mouse ScrollWheel");
         lerpWheel = Mathf.Lerp(lerpWheel, wheelInput, CamOption.zoomAccel); // 부드러운 이동을 위해 보간
     }
@@ -82,19 +89,21 @@ public class CameraController : CameraRequire
     {
         Transform root = Compo.root, rig = Compo.rig;
 
+        RotateModelRoot();
+
         // 회전속도 계수 연산
         float deltaCoef = deltaTime * 50.0f;
 
         // X축 회전값 연산 ( 상하 )
         float currentX = rig.localEulerAngles.x;
-        float nextX = currentX + rotation.y * CamOption.rotateSpeed * deltaCoef;
+        float nextX = currentX + Current.rotation.y * CamOption.rotateSpeed * deltaCoef;
         if (nextX > 180.0f)
         {
             nextX -= 360.0f;
         }
         // Y축 회전값 연산 ( 좌우 )
         float currentY = root.localEulerAngles.y;
-        float nextY = currentY + rotation.x * CamOption.rotateSpeed * deltaCoef;
+        float nextY = currentY + Current.rotation.x * CamOption.rotateSpeed * deltaCoef;
 
         bool rotatableX = CamOption.lookUpLimitAngle < nextX &&
             CamOption.lookDownLimitAngle > nextX;
@@ -102,6 +111,20 @@ public class CameraController : CameraRequire
         // 각 축 회전 적용
         rig.localEulerAngles = Vector3.right * (rotatableX ? nextX : currentX);
         root.localEulerAngles = Vector3.up * nextY;
+    }
+
+    private void RotateModelRoot()
+    {
+        if (Compo.player.State.isMoving == false) return;
+
+        Vector3 dir = Compo.rig.TransformDirection(Compo.player.localMoveDirection);
+        float currentY = Compo.modelRoot.localEulerAngles.y;
+        float nextY = Quaternion.LookRotation(dir, Vector3.up).eulerAngles.y;
+
+        if (nextY - currentY > 180f) nextY -= 360f;
+        else if (currentY - nextY > 180f) nextY += 360f;
+
+        Compo.modelRoot.eulerAngles = Vector3.up * Mathf.Lerp(currentY, nextY, 0.1f);
     }
 
     private void Zoom()
