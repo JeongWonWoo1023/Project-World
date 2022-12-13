@@ -19,17 +19,14 @@ public abstract class PlayerRequire : MonoBehaviour
     public class Components
     {
         [HideInInspector] public Animator anim;
-        [HideInInspector] public Rigidbody rigd;
-        [HideInInspector] public CapsuleCollider capsule;
 
         public Camera cam;
-
-        [HideInInspector] public Transform modelRoot;
+        public Transform modelRoot;
         [HideInInspector] public Transform camRoot;
         [HideInInspector] public Transform camRig;
         [HideInInspector] public GameObject camObj;
 
-        [HideInInspector] public IMovement movement;
+        [HideInInspector] public IPlayerMovement movement;
     }
 
     [Serializable]
@@ -78,16 +75,11 @@ public abstract class PlayerRequire : MonoBehaviour
     }
 
     [Serializable]
-    public class StateOption
+    public class PlayerState
     {
         public bool isMoving; // 걷는 중
         public bool isRunning; // 뛰는 중
         public bool isGrounded; // 지면 접지
-        public bool isUnableMoveSlope; // 걸어서 등반 불가능한 경사로에 있는 경우
-        public bool isJumpTrig; // 점프 트리거
-        public bool isJumping; // 점프 중
-        public bool isBlocked; // 전방에 장애물 존재
-        public bool isOutOfControl; // 제어불가 상태
         public bool isObstacle; // 카메라 루트와 카메라 사이에 장애물이 감지될 경우
     }
 
@@ -105,110 +97,47 @@ public abstract class PlayerRequire : MonoBehaviour
     [SerializeField] private Components _compo = new Components();
     [SerializeField] private CameraOption _camOption = new CameraOption();
     [SerializeField] private KeyOption _key = new KeyOption();
-    [SerializeField] private StateOption _state = new StateOption();
+    [SerializeField] private PlayerState _state = new PlayerState();
     [SerializeField] private AnimatorOption _animOption = new AnimatorOption();
 
     public Components Compo => _compo;
     public CameraOption CamOption => _camOption;
     public KeyOption Key => _key;
-    public StateOption State => _state;
+    public PlayerState State => _state;
     public AnimatorOption AnimOption => _animOption;
-
-    protected float castRadius; // 캡슐 캐스트 반지름값
-    protected float capsuleRadiusDiff; // 판정 보정치
 
     protected Vector2 rotation; // 마우스 움직임을 통해 얻는 회전 값
     protected float camInitDist; // 초기 거리 값
     protected float zoomDistance; // 현재 줌 거리
     protected float camDistance; // 실제 카메라 거리
 
-    protected virtual void InitializeComponent()
-    {
-        InitRigidBody();
-        InitCapsuleCollider();
-        InitCamComponent();
-        Compo.anim = GetComponentInChildren<Animator>();
-    }
+    protected float deltaTime; // Time.deltaTime 캐싱
 
-    private void InitCamComponent()
+    protected virtual void InitializeComponent()
     {
         // 카메라 구성 오브젝트 바인딩
         Compo.camObj = Compo.cam.gameObject;
         Compo.camRig = Compo.cam.transform.parent;
         Compo.camRoot = Compo.camRig.parent;
+
+        InitSetCam();
+        Compo.anim = GetComponentInChildren<Animator>();
+
+        TryGetComponent(out Compo.movement);
     }
 
-    // 리지드바디 컴포넌트 설정
-    private void InitRigidBody()
+    private void InitSetCam()
     {
-        TryGetComponent(out Compo.rigd);
-        if (Compo.rigd == null) Compo.rigd = gameObject.AddComponent<Rigidbody>();
-
-        Compo.rigd.constraints = RigidbodyConstraints.FreezeRotation; // 물리 회전 제한
-        Compo.rigd.interpolation = RigidbodyInterpolation.Interpolate; // 현 프레임과 다음 프레임 사이의 랜더링 차이를 선형보간
-        Compo.rigd.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic; // 충돌판정 추정 활성화
-        Compo.rigd.useGravity = false; // 중력 수동제어를 위한 옵션 비활성화
-    }
-
-    // 캡슐 콜라이더 설정
-    private void InitCapsuleCollider()
-    {
-        TryGetComponent(out Compo.capsule);
-        if (Compo.capsule == null)
+        // 모든 카메라 비활성화
+        Camera[] cams = FindObjectsOfType<Camera>();
+        foreach (Camera cam in cams)
         {
-            Compo.capsule = gameObject.AddComponent<CapsuleCollider>();
-
-            float height = -1f; // 콜라이더 높이
-
-            var skinMeshArray = GetComponentsInChildren<SkinnedMeshRenderer>(); // 플레이어 모델의 스킨 메시 랜더러 배열 가져오기
-            // 스킨 메시 랜더러를 사용하는 경우
-            if (skinMeshArray.Length > 0)
-            {
-                // 모든 메시 탐색
-                foreach (var mesh in skinMeshArray)
-                {
-                    foreach (var vertex in mesh.sharedMesh.vertices)
-                    {
-                        if (height < vertex.y)
-                        {
-                            height = vertex.y;
-                        }
-                    }
-                }
-            }
-            // 메시 랜더러를 사용하는 경우
-            else
-            {
-                var meshFilterArray = GetComponentsInChildren<MeshFilter>();
-                if (meshFilterArray.Length > 0)
-                {
-                    // 모든 메시 탐색
-                    foreach (var mesh in meshFilterArray)
-                    {
-                        foreach (var vertex in mesh.mesh.vertices)
-                        {
-                            if (height < vertex.y)
-                            {
-                                height = vertex.y;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // 높이값이 0보다 작을 경우 1로 초기화
-            if (height <= 0)
-            {
-                height = 1.0f;
-            }
-
-            float center = height * 0.5f; // 중심점 초기화
-
-            Compo.capsule.height = height;
-            Compo.capsule.center = Vector3.up * center;
-            Compo.capsule.radius = 0.2f;
+            cam.gameObject.SetActive(false);
         }
-        castRadius = Compo.capsule.radius * 0.9f;
-        capsuleRadiusDiff = Compo.capsule.radius - castRadius + 0.05f;
+
+        // 카메라의 종류가 많아지면 분리 실행 필요
+        Compo.camObj.SetActive(true);
+
+        camDistance = zoomDistance = camInitDist = Vector3.Distance(Compo.camRig.position, Compo.cam.transform.position);
     }
 }

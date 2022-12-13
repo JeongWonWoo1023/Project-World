@@ -7,8 +7,15 @@ using UnityEngine;
 // Create : 2022. 12. 05.
 // Update : 2022. 12. 05.
 
-public class PlayerMovement : MonoBehaviour, IMovement
+public class PlayerMovement : MonoBehaviour, IPlayerMovement
 {
+    [Serializable]
+    public class Components
+    {
+        [HideInInspector] public Rigidbody rigd;
+        [HideInInspector] public CapsuleCollider capsule;
+    }
+
     [Serializable]
     public class SensorOption
     {
@@ -81,24 +88,45 @@ public class PlayerMovement : MonoBehaviour, IMovement
         public float gravity;
     }
 
+    [Serializable]
+    public class MovementState
+    {
+        public bool isMoving; // 걷는 중
+        public bool isRunning; // 뛰는 중
+        public bool isGrounded; // 지면 접지
+        public bool isUnableMoveSlope; // 걸어서 등반 불가능한 경사로에 있는 경우
+        public bool isJumpTrig; // 점프 트리거
+        public bool isJumping; // 점프 중
+        public bool isBlocked; // 전방에 장애물 존재
+        public bool isOutOfControl; // 제어불가 상태
+    }
+
+    [SerializeField] private Components _compo = new Components();
     [SerializeField] private SensorOption _sensor = new SensorOption();
     [SerializeField] private MovementOption _moveOption = new MovementOption();
     [SerializeField] private CurrentMovement _current = new CurrentMovement();
+    [SerializeField] private MovementState _state = new MovementState();
 
+    public Components Compo => _compo;
     public SensorOption Sensor => _sensor;
     public MovementOption MoveOption => _moveOption;
     public CurrentMovement Current => _current;
+    public MovementState State => _state;
 
     private Vector3 capsuleTop =>
         new Vector3(transform.position.x, transform.position.y + Compo.capsule.height - Compo.capsule.radius, transform.position.z);
     private Vector3 capsuleBottom =>
         new Vector3(transform.position.x, transform.position.y + Compo.capsule.radius, transform.position.z);
 
+    protected float castRadius; // 캡슐 캐스트 반지름값
+    protected float capsuleRadiusDiff; // 판정 보정치
+
     private float fixedDelta;
 
     protected virtual void Start()
     {
-        InitializeComponent();
+        InitRigidBody();
+        InitCapsuleCollider();
     }
 
     protected virtual void FixedUpdate()
@@ -113,6 +141,80 @@ public class PlayerMovement : MonoBehaviour, IMovement
 
         CalculateMovement();
         ApplyMovement();
+    }
+
+    // 리지드바디 컴포넌트 설정
+    private void InitRigidBody()
+    {
+        TryGetComponent(out Compo.rigd);
+        if (Compo.rigd == null) Compo.rigd = gameObject.AddComponent<Rigidbody>();
+
+        Compo.rigd.constraints = RigidbodyConstraints.FreezeRotation; // 물리 회전 제한
+        Compo.rigd.interpolation = RigidbodyInterpolation.Interpolate; // 현 프레임과 다음 프레임 사이의 랜더링 차이를 선형보간
+        Compo.rigd.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic; // 충돌판정 추정 활성화
+        Compo.rigd.useGravity = false; // 중력 수동제어를 위한 옵션 비활성화
+    }
+
+    // 캡슐 콜라이더 설정
+    private void InitCapsuleCollider()
+    {
+        TryGetComponent(out Compo.capsule);
+        if (Compo.capsule == null)
+        {
+            Compo.capsule = gameObject.AddComponent<CapsuleCollider>();
+
+            float height = -1f; // 콜라이더 높이
+
+            var skinMeshArray = GetComponentsInChildren<SkinnedMeshRenderer>(); // 플레이어 모델의 스킨 메시 랜더러 배열 가져오기
+            // 스킨 메시 랜더러를 사용하는 경우
+            if (skinMeshArray.Length > 0)
+            {
+                // 모든 메시 탐색
+                foreach (var mesh in skinMeshArray)
+                {
+                    foreach (var vertex in mesh.sharedMesh.vertices)
+                    {
+                        if (height < vertex.y)
+                        {
+                            height = vertex.y;
+                        }
+                    }
+                }
+            }
+            // 메시 랜더러를 사용하는 경우
+            else
+            {
+                var meshFilterArray = GetComponentsInChildren<MeshFilter>();
+                if (meshFilterArray.Length > 0)
+                {
+                    // 모든 메시 탐색
+                    foreach (var mesh in meshFilterArray)
+                    {
+                        foreach (var vertex in mesh.mesh.vertices)
+                        {
+                            if (height < vertex.y)
+                            {
+                                height = vertex.y;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 높이값이 0보다 작을 경우 1로 초기화
+            if (height <= 0)
+            {
+                height = 1.0f;
+            }
+
+            float center = height * 0.5f; // 중심점 초기화
+
+            Compo.capsule.height = height;
+            Compo.capsule.center = Vector3.up * center;
+            Compo.capsule.radius = 0.2f;
+        }
+        castRadius = Compo.capsule.radius * 0.9f;
+        capsuleRadiusDiff = Compo.capsule.radius - castRadius + 0.05f;
     }
 
     // 이동 불능 상태 세팅
