@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// ½Ì±ÛÅæ µğÀÚÀÎÆĞÅÏ ( »ó¼ÓÀ¸·Î »ç¿ë )
+// ì‹±ê¸€í†¤ ë””ìì¸íŒ¨í„´ ( ìƒì†ìœ¼ë¡œ ì‚¬ìš© )
 public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     protected static T _instance;
@@ -15,12 +15,12 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {
         get
         {
-            if (_instance == null) // ÀÎ½ºÅÏ½º°¡ ºñ¾îÀÖÀ» °æ¿ì
+            if (_instance == null) // ì¸ìŠ¤í„´ìŠ¤ê°€ ë¹„ì–´ìˆì„ ê²½ìš°
             {
-                _instance = FindObjectOfType(typeof(T)) as T; // ÀÎ½ºÅÏ½º Å½»ö
+                _instance = FindObjectOfType(typeof(T)) as T; // ì¸ìŠ¤í„´ìŠ¤ íƒìƒ‰
                 if (_instance == null)
                 {
-                    _instance = new GameObject(typeof(T).ToString()).AddComponent<T>(); // ÀÎ½ºÅÏ½º »ı¼º
+                    _instance = new GameObject(typeof(T).ToString()).AddComponent<T>(); // ì¸ìŠ¤í„´ìŠ¤ ìƒì„±
                 }
             }
             return _instance;
@@ -29,9 +29,9 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
     private void Awake()
     {
-        _instance = this.transform.GetComponent<T>(); // ÀÎ½ºÅÏ½º µî·Ï
+        _instance = this.transform.GetComponent<T>(); // ì¸ìŠ¤í„´ìŠ¤ ë“±ë¡
     }
 
-    public virtual void Init() { } // µî·Ï ½ÃÁ¡ µ¿ÀÛ
-    public virtual void Destroy() { Destroy(this); } // ÀÎ½ºÅÏ½º Á¦°Å½Ã µ¿ÀÛ
+    public virtual void Init() { } // ë“±ë¡ ì‹œì  ë™ì‘
+    public virtual void Destroy() { Destroy(this); } // ì¸ìŠ¤í„´ìŠ¤ ì œê±°ì‹œ ë™ì‘
 }

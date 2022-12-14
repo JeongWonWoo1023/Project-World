@@ -172,6 +172,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
                 // 모든 메시 탐색
                 foreach (var mesh in skinMeshArray)
                 {
+                    if (mesh.gameObject.layer == LayerMask.NameToLayer("Weapon"))
+                    {
+                        Debug.Log("Weapon");
+                        continue;
+                    }
                     foreach (var vertex in mesh.sharedMesh.vertices)
                     {
                         if (height < vertex.y)
@@ -190,6 +195,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
                     // 모든 메시 탐색
                     foreach (var mesh in meshFilterArray)
                     {
+                        if (mesh.gameObject.layer == LayerMask.NameToLayer("Weapon"))
+                        {
+                            Debug.Log("Weapon");
+                            continue;
+                        }
                         foreach (var vertex in mesh.mesh.vertices)
                         {
                             if (height < vertex.y)

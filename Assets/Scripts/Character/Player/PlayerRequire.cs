@@ -25,8 +25,10 @@ public abstract class PlayerRequire : MonoBehaviour
         [HideInInspector] public Transform camRoot;
         [HideInInspector] public Transform camRig;
         [HideInInspector] public GameObject camObj;
+        [HideInInspector] public BattleSystem battleSystem;
 
         [HideInInspector] public IPlayerMovement movement;
+        [HideInInspector] public IBattle interBattle;
     }
 
     [Serializable]
@@ -124,6 +126,8 @@ public abstract class PlayerRequire : MonoBehaviour
         Compo.anim = GetComponentInChildren<Animator>();
 
         TryGetComponent(out Compo.movement);
+        TryGetComponent(out Compo.battleSystem);
+        TryGetComponent(out Compo.interBattle);
     }
 
     private void InitSetCam()

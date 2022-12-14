@@ -6,12 +6,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// ¸Ş¸ğ¸®Ç® µğÀÚÀÎÆĞÅÏ ( Å¬·¡½º ÀÎ½ºÅÏ½º·Î Á¢±Ù )
+// ë©”ëª¨ë¦¬í’€ ë””ìì¸íŒ¨í„´ ( í´ë˜ìŠ¤ ì¸ìŠ¤í„´ìŠ¤ë¡œ ì ‘ê·¼ )
 public class ObjectPool : Singleton<ObjectPool>
 {
-    Dictionary<string, Queue<GameObject>> pool = new Dictionary<string, Queue<GameObject>>(); // ÀúÀå Ç®
+    Dictionary<string, Queue<GameObject>> pool = new Dictionary<string, Queue<GameObject>>(); // ì €ì¥ í’€
     
-    // ¿ÀºêÁ§Æ® °¡Á®¿À±â
+    // ì˜¤ë¸Œì íŠ¸ ê°€ì ¸ì˜¤ê¸°
     public T Pop<T>(GameObject original, Vector3 pos, Quaternion rot)
     {
         string keyName = typeof(T).ToString();
@@ -34,7 +34,7 @@ public class ObjectPool : Singleton<ObjectPool>
         return Instantiate(original, pos, rot).GetComponent<T>();
     }
 
-    // ¿ÀºêÁ§Æ® ³Ö±â
+    // ì˜¤ë¸Œì íŠ¸ ë„£ê¸°
     public void Push<T>(GameObject target)
     {
         target.transform.SetParent(transform);

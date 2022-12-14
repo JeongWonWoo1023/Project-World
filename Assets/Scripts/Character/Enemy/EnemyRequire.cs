@@ -31,8 +31,7 @@ public abstract class EnemyRequire : MonoBehaviour
         public void SetStatus()
         {
             level = defualtData.level; // 월드레벨에 따라 증가하는 로직 필요
-            maxHP = defualtData.hp * (int)(level * 0.5f); // 최대체력 = 기본 체력 * 몬스터 레벨의 절반 ( 소수점 버림 )
-            currentHP = maxHP;
+            currentHP = maxHP = defualtData.hp * (int)(level * 0.5f); // 최대체력 = 기본 체력 * 몬스터 레벨의 절반 ( 소수점 버림 )
             attack = defualtData.attack * (int)(level * 0.2f); // 공격력 = 기본 공격력 * 몬스터 레벨의 20%
             defense = defualtData.defense * (int)(level * 0.15f); // 방어력 = 기본 방어력 * 몬스터 레벨의 15%
         }
