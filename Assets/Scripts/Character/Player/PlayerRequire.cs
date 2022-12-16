@@ -26,6 +26,7 @@ public abstract class PlayerRequire : MonoBehaviour
         [HideInInspector] public Transform camRig;
         [HideInInspector] public GameObject camObj;
         [HideInInspector] public BattleSystem battleSystem;
+        [HideInInspector] public AnimationEvent animEvent;
 
         [HideInInspector] public IPlayerMovement movement;
         [HideInInspector] public IBattle interBattle;
@@ -93,6 +94,7 @@ public abstract class PlayerRequire : MonoBehaviour
         public string paramDistY = "Dist Y";
         public string paramGrounded = "Grounded";
         public string paramJump = "Jump";
+        public string paramAttack = "Attack";
     }
 
     // 필드 & 프로퍼티
@@ -110,8 +112,9 @@ public abstract class PlayerRequire : MonoBehaviour
 
     protected Vector2 rotation; // 마우스 움직임을 통해 얻는 회전 값
     protected float camInitDist; // 초기 거리 값
-    protected float zoomDistance; // 현재 줌 거리
-    protected float camDistance; // 실제 카메라 거리
+    [SerializeField] protected float zoomDistance; // 현재 줌 거리
+    [SerializeField] protected float camDistance; // 실제 카메라 거리
+    [SerializeField] protected float obstacleDistance; // 카메라 방향의 장애물과의 거리
 
     protected float deltaTime; // Time.deltaTime 캐싱
 
@@ -124,7 +127,7 @@ public abstract class PlayerRequire : MonoBehaviour
 
         InitSetCam();
         Compo.anim = GetComponentInChildren<Animator>();
-
+        Compo.anim.TryGetComponent(out Compo.animEvent);
         TryGetComponent(out Compo.movement);
         TryGetComponent(out Compo.battleSystem);
         TryGetComponent(out Compo.interBattle);

@@ -17,6 +17,7 @@ public class PlayerController : PlayerRequire
     private float wheelInput = 0; // 줌 기능 휠 입력 값
     private float lerpWheel; // 보간 된 휠 입력 값
     private float zoomDelta;
+    private float obstacleLerp;
 
     private void Start()
     {
@@ -29,7 +30,7 @@ public class PlayerController : PlayerRequire
 
         SetKeyInputValue();
 
-        SetOnTheGround();
+        CamObstacleProcess();
         Rotate();
         Zoom();
 
@@ -70,6 +71,10 @@ public class PlayerController : PlayerRequire
         if (Input.GetKey(Key.moveBackward)) vertical -= 1.0f;
         if (Input.GetKey(Key.moveLeft)) horizontal -= 1.0f;
         if (Input.GetKey(Key.moveRight)) horizontal += 1.0f;
+        if(Input.GetMouseButtonDown(0))
+        {
+            Compo.anim.SetTrigger(AnimOption.paramAttack);
+        }
 
         SendMovementInfo(horizontal, vertical);
         rotation = new Vector2(Input.GetAxisRaw("Mouse X"), -Input.GetAxisRaw("Mouse Y"));
@@ -100,41 +105,6 @@ public class PlayerController : PlayerRequire
         localMoveDirection = new Vector3(horizontal, 0.0f, vertical).normalized;
         worldMoveDirection = Compo.camRoot.TransformDirection(localMoveDirection);
         Compo.movement.SetMovement(worldMoveDirection, State.isRunning);
-    }
-
-    // 카메라가 항상 지면 위에 위치하게 설정
-    private void SetOnTheGround()
-    {
-        Transform root = Compo.camRoot, cam = Compo.camObj.transform;
-
-        State.isObstacle = Physics.Raycast(root.position, -cam.forward, out var hit, zoomDistance + 2.0f, CamOption.groundMask);
-        if (State.isObstacle)
-        {
-            // 현재 카메라의 거리 캐싱
-            camDistance = Mathf.Clamp(Vector3.Distance(root.position, cam.position),
-                            camInitDist - CamOption.zoomInDistance,
-                            camInitDist + CamOption.zoomOutDistance);
-            if (camDistance > camInitDist - CamOption.zoomInDistance)
-            {
-                cam.position = hit.point + cam.forward * 1.0f;
-            }
-        }
-        else if (camDistance < zoomDistance)
-        {
-            float lerp;
-            if (camDistance < CamOption.zoomInDistance)
-            {
-                lerp = Mathf.Lerp(camDistance, zoomDistance, 0.5f);
-            }
-            else
-            {
-                lerp = Mathf.Lerp(camDistance, zoomDistance, 0.001f);
-            }
-            Vector3 move = Vector3.back * lerp * deltaTime;
-            cam.Translate(move, Space.Self);
-            camDistance = Vector3.Distance(root.position, cam.position);
-        }
-
     }
 
     private void Rotate()
@@ -181,82 +151,88 @@ public class PlayerController : PlayerRequire
 
     private void Zoom()
     {
-        if (Mathf.Abs(lerpWheel) < 0.01f) return; // 휠 입력이 없을 경우 예외 처리
+        if (Mathf.Abs(lerpWheel) < 0.01f)
+        {
+            return; // 휠 입력이 없을 경우 예외 처리
+        }
 
-        Transform cam = Compo.cam.transform;
-        Transform rig = Compo.camRig;
+        Transform cam = Compo.cam.transform, root = Compo.camRoot;
 
         float zoomValue = deltaTime * CamOption.zoomSpeed; // 줌 적용 값
+        camDistance = Vector3.Distance(root.position, cam.position);
         Vector3 move = Vector3.forward * zoomValue * lerpWheel * 10.0f; // 실제 이동 벡터
-
-        zoomDistance = Mathf.Clamp(camInitDist + zoomDelta,
-                        camInitDist - CamOption.zoomInDistance,
-                        camInitDist + CamOption.zoomOutDistance);
 
         if (State.isObstacle)
         {
+            // 줌인
             if (lerpWheel > 0.01f)
             {
-                if (camDistance > camInitDist - CamOption.zoomInDistance)
+                if(camDistance > camInitDist - CamOption.zoomInDistance)
                 {
+                    zoomDistance -= move.magnitude;
                     cam.Translate(move, Space.Self);
                 }
             }
+            // 줌아웃
             else if (lerpWheel < -0.01f)
             {
-                if (camDistance < camInitDist + CamOption.zoomOutDistance)
+                if(camDistance < obstacleDistance)
                 {
+                    zoomDistance += move.magnitude;
                     cam.Translate(move, Space.Self);
                 }
             }
         }
         else
         {
-            if (camDistance < zoomDistance)
+            // 줌인
+            if (lerpWheel > 0.01f)
             {
-                // 줌인
-                if (lerpWheel > 0.01f)
+                if (camDistance > camInitDist - CamOption.zoomInDistance)
                 {
-                    // 초기 거리 - 현재 거리 값이 줌인 한계치보다 낮을 경우
-                    if (camInitDist - zoomDistance < CamOption.zoomInDistance)
-                    {
-                        zoomDelta -= move.magnitude;
-                    }
-                }
-                // 줌아웃
-                else if (lerpWheel < -0.01f)
-                {
-                    // 현재 거리 - 초기 거리 값이 줌아웃 한계치보다 낮을 경우
-                    if (zoomDistance - camInitDist < CamOption.zoomOutDistance)
-                    {
-                        zoomDelta += move.magnitude;
-                    }
+                    zoomDistance -= move.magnitude;
+                    cam.Translate(move, Space.Self);
                 }
             }
-            else
+            // 줌아웃
+            else if (lerpWheel < -0.01f)
             {
-                camDistance = zoomDistance;
+                if (camDistance < camInitDist + CamOption.zoomOutDistance)
+                {
+                    zoomDistance += move.magnitude;
+                    cam.Translate(move, Space.Self);
+                }
+            }
+        }
+    }
 
-                // 줌인
-                if (lerpWheel > 0.01f)
-                {
-                    // 초기 거리 - 현재 거리 값이 줌인 한계치보다 낮을 경우
-                    if (camInitDist - zoomDistance < CamOption.zoomInDistance)
-                    {
-                        cam.Translate(move, Space.Self);
-                        zoomDelta -= move.magnitude;
-                    }
-                }
-                // 줌아웃
-                else if (lerpWheel < -0.01f)
-                {
-                    // 현재 거리 - 초기 거리 값이 줌아웃 한계치보다 낮을 경우
-                    if (zoomDistance - camInitDist < CamOption.zoomOutDistance)
-                    {
-                        cam.Translate(move, Space.Self);
-                        zoomDelta += move.magnitude;
-                    }
-                }
+    private void CamObstacleProcess()
+    {
+        Transform cam = Compo.cam.transform, root = Compo.camRoot;
+        zoomDelta = zoomDistance - camDistance;
+        // 장애물 감지 여부
+        State.isObstacle = Physics.Raycast(root.position, -cam.forward, out RaycastHit hit, zoomDistance + 1.0f, CamOption.groundMask);
+        if (State.isObstacle)
+        {
+            if (hit.distance > zoomDistance) return;
+            obstacleDistance = hit.distance - 1.0f;
+
+            cam.position = hit.point + cam.forward;
+            camDistance = Mathf.Clamp(Vector3.Distance(Compo.camRoot.position, cam.position),
+                            camInitDist - CamOption.zoomInDistance,
+                            obstacleDistance);
+        }
+        else
+        {
+            if (camDistance < zoomDistance)
+            {
+                float distanceCoef = (zoomDistance - camDistance) * 7.0f / zoomDistance;
+                Debug.Log(distanceCoef);
+                obstacleLerp = Mathf.Lerp(obstacleLerp, distanceCoef, 0.5f);
+                //Debug.Log(obstacleLerp);
+                Vector3 move = Vector3.back * obstacleLerp * deltaTime;
+                cam.Translate(move, Space.Self);
+                camDistance = Vector3.Distance(root.position, cam.position);
             }
         }
     }

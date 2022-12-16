@@ -59,7 +59,6 @@ public class PlayerBattle : BattleSystem
         if (State.isDead)
         {
             stat.currentHP = 0;
-            OnDead();
         }
     }
 
@@ -67,29 +66,30 @@ public class PlayerBattle : BattleSystem
 
     public void Attack()
     {
+        Vector3 center = Compo.rangeObj.transform.position;
         // 물리공격, 마법공격 판정 분리
         switch (stat.defualtData.attackType)
         {
             case AttackType.Physical:
-                collTargets = Physics.OverlapSphere(Compo.center, Compo.radius, targetMask, QueryTriggerInteraction.Ignore);
+                collTargets = Physics.OverlapSphere(center, Compo.radius, targetMask);
                 break;
             case AttackType.Magical:
                 if(Compo.collSphere != null)
                 {
-                    collTargets = Physics.OverlapSphere(Compo.center, Compo.radius, targetMask, QueryTriggerInteraction.Ignore);
+                    collTargets = Physics.OverlapSphere(center, Compo.radius, targetMask);
                 }
                 else if(Compo.collBox != null)
                 {
-                    collTargets = Physics.OverlapBox(Compo.center, Compo.boxSize, Quaternion.identity, targetMask, QueryTriggerInteraction.Ignore);
+                    collTargets = Physics.OverlapBox(center, Compo.boxSize, Quaternion.identity, targetMask);
                 }
                 break;
         }
 
-        if(collTargets.Length > 0)
+        if (collTargets.Length > 0)
         {
-            foreach (IBattle target in collTargets)
+            foreach (Collider target in collTargets)
             {
-                target?.OnDamage(10);
+                target.GetComponent<IBattle>()?.OnDamage(10);
             }
         }
     }
