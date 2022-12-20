@@ -7,7 +7,7 @@ using UnityEngine;
 // Create : 2022. 12. 05.
 // Update : 2022. 12. 05.
 
-public class PlayerMovement : MonoBehaviour, IPlayerMovement
+public class PhysicalMovement : MonoBehaviour, IMovement
 {
     [Serializable]
     public class Components
@@ -221,7 +221,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
 
             Compo.capsule.height = height;
             Compo.capsule.center = Vector3.up * center;
-            Compo.capsule.radius = 0.2f;
+            Compo.capsule.radius = 0.25f;
         }
         castRadius = Compo.capsule.radius * 0.9f;
         capsuleRadiusDiff = Compo.capsule.radius - castRadius + 0.05f;

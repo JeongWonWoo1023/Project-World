@@ -28,7 +28,7 @@ public abstract class PlayerRequire : MonoBehaviour
         [HideInInspector] public BattleSystem battleSystem;
         [HideInInspector] public AnimationEvent animEvent;
 
-        [HideInInspector] public IPlayerMovement movement;
+        [HideInInspector] public IMovement movement;
         [HideInInspector] public IBattle interBattle;
     }
 
@@ -40,6 +40,9 @@ public abstract class PlayerRequire : MonoBehaviour
 
         [Range(1.0f, 10.0f), Tooltip("카메라 회전 속도")]
         public float rotateSpeed = 2.0f;
+
+        [Range(0.01f, 0.5f), Tooltip("카메라 캐스팅 반지름")]
+        public float castRadius = 0.1f;
 
         [Range(-90.0f, 0.0f), Tooltip("올려다보기 제한 각")]
         public float lookUpLimitAngle = -60.0f;

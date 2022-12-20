@@ -16,7 +16,6 @@ public class PlayerController : PlayerRequire
 
     private float wheelInput = 0; // 줌 기능 휠 입력 값
     private float lerpWheel; // 보간 된 휠 입력 값
-    private float zoomDelta;
     private float obstacleLerp;
 
     private void Start()
@@ -151,16 +150,15 @@ public class PlayerController : PlayerRequire
 
     private void Zoom()
     {
-        if (Mathf.Abs(lerpWheel) < 0.01f)
+        if (Mathf.Abs(wheelInput) < 0.01f)
         {
             return; // 휠 입력이 없을 경우 예외 처리
         }
 
         Transform cam = Compo.cam.transform, root = Compo.camRoot;
 
-        float zoomValue = deltaTime * CamOption.zoomSpeed; // 줌 적용 값
-        camDistance = Vector3.Distance(root.position, cam.position);
-        Vector3 move = Vector3.forward * zoomValue * lerpWheel * 10.0f; // 실제 이동 벡터
+        float zoomValue = CamOption.zoomSpeed * deltaTime; // 줌 적용 값
+        Vector3 move = Vector3.forward * zoomValue * lerpWheel * 50.0f; // 실제 이동 벡터
 
         if (State.isObstacle)
         {
@@ -206,34 +204,27 @@ public class PlayerController : PlayerRequire
         }
     }
 
+    // 카메라와 캐릭터 사이에 장애물에대한 처리
     private void CamObstacleProcess()
     {
         Transform cam = Compo.cam.transform, root = Compo.camRoot;
-        zoomDelta = zoomDistance - camDistance;
-        // 장애물 감지 여부
-        State.isObstacle = Physics.Raycast(root.position, -cam.forward, out RaycastHit hit, zoomDistance + 1.0f, CamOption.groundMask);
+
+        Vector3 origin = root.position + cam.forward;
+        float castDist = Vector3.Distance(origin, cam.position);
+        State.isObstacle = Physics.SphereCast(origin, CamOption.castRadius, -cam.forward, out RaycastHit hit, castDist + CamOption.castRadius, CamOption.groundMask);
+        bool cast = Physics.SphereCast(origin, CamOption.castRadius, -cam.forward, out RaycastHit castHit, castDist + 1.0f, CamOption.groundMask);
         if (State.isObstacle)
         {
-            if (hit.distance > zoomDistance) return;
-            obstacleDistance = hit.distance - 1.0f;
-
-            cam.position = hit.point + cam.forward;
-            camDistance = Mathf.Clamp(Vector3.Distance(Compo.camRoot.position, cam.position),
-                            camInitDist - CamOption.zoomInDistance,
-                            obstacleDistance);
-        }
-        else
-        {
-            if (camDistance < zoomDistance)
+            if(camDistance > 0.5f)
             {
-                float distanceCoef = (zoomDistance - camDistance) * 7.0f / zoomDistance;
-                Debug.Log(distanceCoef);
-                obstacleLerp = Mathf.Lerp(obstacleLerp, distanceCoef, 0.5f);
-                //Debug.Log(obstacleLerp);
-                Vector3 move = Vector3.back * obstacleLerp * deltaTime;
-                cam.Translate(move, Space.Self);
-                camDistance = Vector3.Distance(root.position, cam.position);
+                cam.position = hit.point + hit.normal * 0.15f;
             }
         }
+        else if(camDistance < zoomDistance && !cast)
+        {
+            obstacleLerp = Mathf.Lerp(obstacleLerp, (zoomDistance - camDistance) * 10.0f / zoomDistance, 0.1f);
+            cam.Translate(Vector3.back * obstacleLerp * deltaTime, Space.Self);
+        }
+        camDistance = Vector3.Distance(root.position, cam.position);
     }
 }
