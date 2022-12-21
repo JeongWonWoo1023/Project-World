@@ -1,230 +1,116 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+// Developer : Jeong Won Woo
+// Create : 2022. 12. 21.
+// Update : 2022. 12. 21.
+
 using UnityEngine;
 
-public class PlayerController : PlayerRequire
+[RequireComponent(typeof(PlayerInput))]
+public class PlayerController : MonoBehaviour
 {
+    [field:Header("참조 데이터")]
+    [field: SerializeField] public PlayerScriptableData Data { get; private set; } // 플레이어 스크립터블 오브젝트 데이터
+    public PlayerInput Input { get; private set; } // 뉴 인풋 매니저에의한 입력을 관리하는 인스턴스
+    public Rigidbody Rigid { get; private set; }
+    public CapsuleCollider Collider { get; private set; }
+    public Transform MainCameraTrans { get; private set; } // 카메라 트랜스폼
 
-    public Vector3 localMoveDirection;
-    public Vector3 worldMoveDirection;
+    private PlayerMovementStateMachine movementStateMachine; // 이동관련 상태기계 필드
 
-    private float groundDistance;
+    private void Awake()
+    {
+        MainCameraTrans = Camera.main.transform;
+        movementStateMachine = new PlayerMovementStateMachine(this); // 상태기계 인스턴스 생성
 
-    private float moveX = 0.0f;
-    private float moveZ = 0.0f;
-
-    private float wheelInput = 0; // 줌 기능 휠 입력 값
-    private float lerpWheel; // 보간 된 휠 입력 값
-    private float obstacleLerp;
+    }
 
     private void Start()
     {
-        InitializeComponent();
+        SetRigidbody();
+        SetCollider();
+        Input = GetComponent<PlayerInput>();
+        movementStateMachine.ChangeState(movementStateMachine.IdlingState); // 시작 시 Idling상태로 전환
     }
 
     private void Update()
     {
-        deltaTime = Time.deltaTime;
-
-        SetKeyInputValue();
-
-        CamObstacleProcess();
-        Rotate();
-        Zoom();
-
-        SendGroundDistParam();
-        SetAnimationParams();
+        movementStateMachine.HandleInput(); // 입력 처리
+        movementStateMachine.Process(); // 동작 처리
     }
 
-    private void SetAnimationParams()
+    private void FixedUpdate()
     {
-        float x = localMoveDirection.x, z = localMoveDirection.sqrMagnitude > 0.0f ? 1.0f : 0.0f;
-        if (State.isRunning)
+        movementStateMachine.PhysicalProcess(); // 물리 동작 처리
+    }
+
+    // 리지드바디 컴포넌트 설정
+    [ContextMenu("SetRigidbody")]
+    private void SetRigidbody()
+    {
+        Rigid = GetComponent<Rigidbody>();
+        if(Rigid== null)
         {
-            x *= 2.0f;
-            z *= 2.0f;
+            Rigid = gameObject.AddComponent<Rigidbody>();
         }
-
-        moveX = Mathf.Lerp(moveX, x, 0.05f);
-        moveZ = Mathf.Lerp(moveZ, z, 0.05f);
-
-        Compo.anim.SetFloat(AnimOption.paramMoveX, moveX);
-        Compo.anim.SetFloat(AnimOption.paramMoveZ, moveZ);
-        Compo.anim.SetFloat(AnimOption.paramDistY, groundDistance);
-        Compo.anim.SetBool(AnimOption.paramGrounded, State.isGrounded);
+        Rigid.constraints = RigidbodyConstraints.FreezeRotation; // 물리 회전 제한
+        Rigid.interpolation = RigidbodyInterpolation.Interpolate; // 현재 프레임과 다음 프레임 사이 추정값 보간옵션
+        Rigid.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic; // 충돌 추정 옵션
     }
 
-    private void SendGroundDistParam()
+    // 캡슐 콜라이더 컴포넌트 설정
+    [ContextMenu("SetCollider")]
+    private void SetCollider()
     {
-        groundDistance = Compo.movement.GetDistanceFormGround();
-        State.isGrounded = Compo.movement.IsGrounded();
-    }
-
-    // 입력 이벤트 처리
-    private void SetKeyInputValue()
-    {
-        float horizontal = 0.0f, vertical = 0.0f;
-
-        if (Input.GetKey(Key.moveForward)) vertical += 1.0f;
-        if (Input.GetKey(Key.moveBackward)) vertical -= 1.0f;
-        if (Input.GetKey(Key.moveLeft)) horizontal -= 1.0f;
-        if (Input.GetKey(Key.moveRight)) horizontal += 1.0f;
-        if(Input.GetMouseButtonDown(0))
+        Collider = GetComponent<CapsuleCollider>();
+        if(Collider == null)
         {
-            Compo.anim.SetTrigger(AnimOption.paramAttack);
-        }
+            Collider = gameObject.AddComponent<CapsuleCollider>();
 
-        SendMovementInfo(horizontal, vertical);
-        rotation = new Vector2(Input.GetAxisRaw("Mouse X"), -Input.GetAxisRaw("Mouse Y"));
-        State.isMoving = horizontal != 0 || vertical != 0;
-        State.isRunning = Input.GetKey(Key.dash);
+            float maxHeight = -1.0f;
 
-        if (Input.GetKeyDown(Key.jump))
-        {
-            Jump();
-        }
+            SkinnedMeshRenderer[] skinMeshs = GetComponentsInChildren<SkinnedMeshRenderer>(); // 스킨 메시 랜더러 컴포넌트 모두 불러오기
 
-        wheelInput = Input.GetAxisRaw("Mouse ScrollWheel");
-        lerpWheel = Mathf.Lerp(lerpWheel, wheelInput, CamOption.zoomAccel); // 부드러운 이동을 위해 보간
-    }
-
-    private void Jump()
-    {
-        bool jumpSucceeded = Compo.movement.TryJump();
-
-        if (jumpSucceeded)
-        {
-            // 애니메이션 파트
-        }
-    }
-
-    private void SendMovementInfo(float horizontal, float vertical)
-    {
-        localMoveDirection = new Vector3(horizontal, 0.0f, vertical).normalized;
-        worldMoveDirection = Compo.camRoot.TransformDirection(localMoveDirection);
-        Compo.movement.SetMovement(worldMoveDirection, State.isRunning);
-    }
-
-    private void Rotate()
-    {
-        Transform root = Compo.camRoot, rig = Compo.camRig;
-
-        RotateModelRoot();
-
-        // 회전속도 계수 연산
-        float deltaCoef = deltaTime * 50.0f;
-
-        // X축 회전값 연산 ( 상하 )
-        float currentX = rig.localEulerAngles.x;
-        float nextX = currentX + rotation.y * CamOption.rotateSpeed * deltaCoef;
-        if (nextX > 180.0f)
-        {
-            nextX -= 360.0f;
-        }
-        // Y축 회전값 연산 ( 좌우 )
-        float currentY = root.localEulerAngles.y;
-        float nextY = currentY + rotation.x * CamOption.rotateSpeed * deltaCoef;
-
-        bool rotatableX = CamOption.lookUpLimitAngle < nextX &&
-            CamOption.lookDownLimitAngle > nextX;
-
-        // 각 축 회전 적용
-        rig.localEulerAngles = Vector3.right * (rotatableX ? nextX : currentX);
-        root.localEulerAngles = Vector3.up * nextY;
-    }
-
-    private void RotateModelRoot()
-    {
-        if (State.isMoving == false) return;
-
-        Vector3 dir = Compo.camRig.TransformDirection(localMoveDirection);
-        float currentY = Compo.modelRoot.localEulerAngles.y;
-        float nextY = Quaternion.LookRotation(dir, Vector3.up).eulerAngles.y;
-
-        if (nextY - currentY > 180f) nextY -= 360f;
-        else if (currentY - nextY > 180f) nextY += 360f;
-
-        Compo.modelRoot.eulerAngles = Vector3.up * Mathf.Lerp(currentY, nextY, 0.1f);
-    }
-
-    private void Zoom()
-    {
-        if (Mathf.Abs(wheelInput) < 0.01f)
-        {
-            return; // 휠 입력이 없을 경우 예외 처리
-        }
-
-        Transform cam = Compo.cam.transform, root = Compo.camRoot;
-
-        float zoomValue = CamOption.zoomSpeed * deltaTime; // 줌 적용 값
-        Vector3 move = Vector3.forward * zoomValue * lerpWheel * 50.0f; // 실제 이동 벡터
-
-        if (State.isObstacle)
-        {
-            // 줌인
-            if (lerpWheel > 0.01f)
+            // 컴포넌트가 하나라도 있는 경우
+            if(skinMeshs.Length > 0)
             {
-                if(camDistance > camInitDist - CamOption.zoomInDistance)
+                foreach(SkinnedMeshRenderer mesh in skinMeshs)
                 {
-                    zoomDistance -= move.magnitude;
-                    cam.Translate(move, Space.Self);
+                    foreach(Vector3 vertex in mesh.sharedMesh.vertices)
+                    {
+                        if(maxHeight < vertex.y)
+                        {
+                            maxHeight= vertex.y;
+                        }
+                    }
                 }
             }
-            // 줌아웃
-            else if (lerpWheel < -0.01f)
+            // 스킨 메시 랜더러가 없을 경우
+            else
             {
-                if(camDistance < obstacleDistance)
-                {
-                    zoomDistance += move.magnitude;
-                    cam.Translate(move, Space.Self);
-                }
-            }
-        }
-        else
-        {
-            // 줌인
-            if (lerpWheel > 0.01f)
-            {
-                if (camDistance > camInitDist - CamOption.zoomInDistance)
-                {
-                    zoomDistance -= move.magnitude;
-                    cam.Translate(move, Space.Self);
-                }
-            }
-            // 줌아웃
-            else if (lerpWheel < -0.01f)
-            {
-                if (camDistance < camInitDist + CamOption.zoomOutDistance)
-                {
-                    zoomDistance += move.magnitude;
-                    cam.Translate(move, Space.Self);
-                }
-            }
-        }
-    }
+                MeshFilter[] meshFIlters = GetComponentsInChildren<MeshFilter>(); // 메시 필터 컴포넌트 모두 불러오기
 
-    // 카메라와 캐릭터 사이에 장애물에대한 처리
-    private void CamObstacleProcess()
-    {
-        Transform cam = Compo.cam.transform, root = Compo.camRoot;
-
-        Vector3 origin = root.position + cam.forward;
-        float castDist = Vector3.Distance(origin, cam.position);
-        State.isObstacle = Physics.SphereCast(origin, CamOption.castRadius, -cam.forward, out RaycastHit hit, castDist + CamOption.castRadius, CamOption.groundMask);
-        bool cast = Physics.SphereCast(origin, CamOption.castRadius, -cam.forward, out RaycastHit castHit, castDist + 1.0f, CamOption.groundMask);
-        if (State.isObstacle)
-        {
-            if(camDistance > 0.5f)
-            {
-                cam.position = hit.point + hit.normal * 0.15f;
+                // 컴포넌트가 하나라도 있는 경우
+                if(meshFIlters.Length > 0)
+                {
+                    foreach(MeshFilter mesh in meshFIlters)
+                    {
+                        foreach(Vector3 vertex in mesh.mesh.vertices)
+                        {
+                            if(maxHeight < vertex.y)
+                            {
+                                maxHeight = vertex.y;
+                            }
+                        }
+                    }
+                }
             }
+            if (maxHeight <= 0)
+            {
+                maxHeight = 1.0f;
+            }
+            float center = maxHeight * 0.5f;
+            Collider.height = maxHeight;
+            Collider.center = Vector3.up * center;
+            Collider.radius = 0.2f;
         }
-        else if(camDistance < zoomDistance && !cast)
-        {
-            obstacleLerp = Mathf.Lerp(obstacleLerp, (zoomDistance - camDistance) * 10.0f / zoomDistance, 0.1f);
-            cam.Translate(Vector3.back * obstacleLerp * deltaTime, Space.Self);
-        }
-        camDistance = Vector3.Distance(root.position, cam.position);
     }
 }
