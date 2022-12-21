@@ -193,7 +193,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 121175694}
   m_LocalRotation: {x: 0.000000007768664, y: 0.996761, z: -0.08042035, w: 0.00000009628783}
-  m_LocalPosition: {x: -0.0000009660072, y: 1, z: 11}
+  m_LocalPosition: {x: -0.0000009660072, y: 1, z: 10.999996}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -228,7 +228,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 194851742}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.2, z: -6}
+  m_LocalPosition: {x: 0, y: 1.2, z: -5.999996}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -521,7 +521,7 @@ MonoBehaviour:
   m_TargetMovementOnly: 1
   m_ScreenX: 0.5
   m_ScreenY: 0.5
-  m_CameraDistance: 6
+  m_CameraDistance: 5.999996
   m_DeadZoneWidth: 0
   m_DeadZoneHeight: 0
   m_DeadZoneDepth: 0
@@ -1064,7 +1064,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1063040749}
   m_LocalRotation: {x: 0.09853762, y: 0.000006870477, z: -0.0000006803113, w: 0.99513334}
-  m_LocalPosition: {x: -0.00006908379, y: 1, z: 1}
+  m_LocalPosition: {x: -0.00006908379, y: 1, z: 0.9999962}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1402,7 +1402,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1746480620}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: fc8fd03070f97c34e85dfe8b47ce1fb7, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.2
@@ -1636,7 +1636,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1891009863}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.2, z: -6}
+  m_LocalPosition: {x: 0, y: 1.2, z: -5.999996}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1746,8 +1746,8 @@ MonoBehaviour:
   defaultDistance: 6
   minDistance: 1
   maxDiatance: 6
-  lerp: 4
-  sensitivity: 1
+  lerpCoef: 4
+  wheelCoef: 1
 --- !u!1 &1915467609
 GameObject:
   m_ObjectHideFlags: 0
@@ -1915,7 +1915,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1955698581}
   m_LocalRotation: {x: 0.061790183, y: -0.13039877, z: 0.008142857, w: 0.9895008}
-  m_LocalPosition: {x: 1.2953286, y: 1, z: 1.1707015}
+  m_LocalPosition: {x: 1.2953286, y: 1, z: 1.1706977}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
