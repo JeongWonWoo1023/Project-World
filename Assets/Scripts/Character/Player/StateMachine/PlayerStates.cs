@@ -2,6 +2,8 @@
 // Create : 2022. 12. 21.
 // Update : 2022. 12. 21.
 
+using System;
+using System.Net.Http.Headers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -112,8 +114,13 @@ public class PlayerMovementState : IState
         return velocity;
     }
 
-    protected float GetMovementSpeed() => movementData.BaseMoveSpeed * stateMachine.StateData.MoveSpeedCoef;
+    protected float GetMovementSpeed()
+    {
+        Debug.Log(stateMachine.StateData.MovementOnSlopeSpeed);
+        return movementData.BaseMoveSpeed* stateMachine.StateData.MoveSpeedCoef* stateMachine.StateData.MovementOnSlopeSpeed;
+    }
     protected Vector3 GetInputDirection() => new Vector3(stateMachine.StateData.MovementInput.x, 0.0f, stateMachine.StateData.MovementInput.y);
+    protected Vector3 GetPlayerVerticalVelocity() => new Vector3(0.0f, stateMachine.Player.Rigid.velocity.y, 0.0f);
 
     protected void RotateToTargetRotation()
     {
@@ -235,9 +242,57 @@ public class PlayerMovingState : PlayerGroundedState
 
 public class PlayerGroundedState : PlayerMovementState
 {
+    private SlopeData slopeData;
+
     public PlayerGroundedState(PlayerMovementStateMachine playerMovementStateMachine) : base(playerMovementStateMachine)
     {
+        slopeData = stateMachine.Player.ColliderUtil.SlopeData;
     }
+
+    public override void PhysicalProcess()
+    {
+        base.PhysicalProcess();
+
+        Float();
+    }
+
+    private void Float()
+    {
+        Vector3 worldCenter = stateMachine.Player.ColliderUtil.ColliderData.Collider.bounds.center;
+        Ray centerOriginRay = new Ray(worldCenter, Vector3.down);
+
+        bool cast = Physics.Raycast(centerOriginRay, out RaycastHit hit,
+            slopeData.RayDIstance, stateMachine.Player.LayerData.GroundMask,
+            QueryTriggerInteraction.Ignore);
+
+        if (cast)
+        {
+            float groungAngle = Vector3.Angle(hit.normal, -centerOriginRay.direction);
+
+            float slopeSpeedCoef = SetSlopeSpeedOnAngle(groungAngle);
+
+            if(Mathf.Approximately(slopeSpeedCoef, 0.0f)) return;
+
+            float floatingDistance = stateMachine.Player.ColliderUtil.ColliderData.localCenter.y
+                * stateMachine.Player.transform.localScale.y - hit.distance;
+
+            if(Mathf.Approximately(floatingDistance,0.0f)) return;
+
+            float amountToLift = floatingDistance * slopeData.StepReachForce - GetPlayerVerticalVelocity().y;
+            Vector3 liftForce = new Vector3(0.0f,amountToLift,0.0f);
+            stateMachine.Player.Rigid.AddForce(liftForce, ForceMode.VelocityChange);
+        }
+
+    }
+
+    private float SetSlopeSpeedOnAngle(float angle)
+    {
+        float slopeSpeedCoef = movementData.SlopeSpeedAngle.Evaluate(angle);
+        stateMachine.StateData.MovementOnSlopeSpeed = slopeSpeedCoef;
+
+        return slopeSpeedCoef;
+    }
+
     protected virtual void OnMove()
     {
         if (stateMachine.StateData.IsWalk)
