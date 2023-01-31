@@ -19,10 +19,10 @@ TagManager:
   - Interaction
   - Item
   - Weapon
-  - 
-  - 
-  - 
-  - 
+  - GroundSensor
+  - EnemySpawnSensor
+  - Spawner
+  - ItemSensor
   - 
   - 
   - 
