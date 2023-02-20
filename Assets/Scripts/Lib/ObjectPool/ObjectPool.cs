@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -56,10 +55,10 @@ public class ObjectPool : Singleton<ObjectPool>
         spawnObject = new List<GameObject>();
         poolDictionary = new Dictionary<string, Queue<GameObject>>();
 
-        foreach(Pool pool in pools)
+        foreach (Pool pool in pools)
         {
-            poolDictionary.Add(pool.key,new Queue<GameObject>());
-            for(int i = 0; i < pool.size;i++)
+            poolDictionary.Add(pool.key, new Queue<GameObject>());
+            for (int i = 0; i < pool.size; i++)
             {
                 GameObject obj = CreateNewObject(pool.key, pool.prefab);
                 SortPool(obj);

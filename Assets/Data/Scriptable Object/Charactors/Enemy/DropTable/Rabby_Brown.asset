@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a4e488abfbdaaf48b3e41e9e1b084f8, type: 3}
   m_Name: Rabby_Brown
   m_EditorClassIdentifier: 
-  <DropItem>k__BackingField: []
-  <DropCount>k__BackingField: 
-  <DropRatio>k__BackingField: 
+  <DropItem>k__BackingField:
+  - {fileID: 1393026917449035473, guid: 04882012582b87d42981453435ef17f6, type: 3}
+  <DropCount>k__BackingField: 01000000
+  <DropRatio>k__BackingField: 64000000
+  <DropGold>k__BackingField: 50

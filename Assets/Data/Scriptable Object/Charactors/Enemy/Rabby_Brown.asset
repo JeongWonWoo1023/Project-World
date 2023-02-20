@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4971fe4a90d07ab4fbfdcde56a458c08, type: 3}
   m_Name: Rabby_Brown
   m_EditorClassIdentifier: 
+  <EnemyName>k__BackingField: "\uBE0C\uB77C\uC6B4\uB798\uBE44"
   <DefualtStatus>k__BackingField:
     <Experience>k__BackingField:
       <Level>k__BackingField: 1
@@ -81,10 +82,11 @@ MonoBehaviour:
     <BaseMovementSpeed>k__BackingField: 1.5
     <ChasingMovementCoef>k__BackingField: 1.5
     <KeepDistance>k__BackingField: 1.5
-    <DisableChasingDistance>k__BackingField: 1.5
+    <DisableChasingDistance>k__BackingField: 15
     <Rotation>k__BackingField:
       <ReachTargetRotation>k__BackingField: {x: 0, y: 0.14, z: 0}
     <StartAnimation>k__BackingField: 0
   <TargetMask>k__BackingField:
     serializedVersion: 2
     m_Bits: 64
+  <HitSound>k__BackingField: {fileID: 8300000, guid: a7aed7b604bebf04ebe7fb5ca29299ea, type: 3}

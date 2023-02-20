@@ -8,4 +8,5 @@ public class PlayerScriptableData : ScriptableObject
 {
     [field: SerializeField] public PlayerMovementData Movement { get; private set; }
     [field: SerializeField] public StatusData DefualtStatus { get; private set; }
+    [field: SerializeField] public AudioClip HitSound { get; private set; }
 }

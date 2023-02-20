@@ -175,7 +175,13 @@ MonoBehaviour:
     m_Bits: 64
   weapon: {fileID: 5504756821558808211}
   <Data>k__BackingField: {fileID: 11400000, guid: 8a652dee399e4a84bbaa767d7ac1fc26, type: 2}
+  <DropTable>k__BackingField: {fileID: 11400000, guid: 06d8140c532e1eb45bd2c1639b8be969, type: 2}
   <FindTargetUtility>k__BackingField: {fileID: 53446208352143733}
+  <AttackTimeUtil>k__BackingField:
+    <CoolTime>k__BackingField:
+      hour: 0
+      minute: 0
+      second: 5
   <UITrakingOffset>k__BackingField: {fileID: 2788416383269384547}
 --- !u!114 &53446208352143733
 MonoBehaviour:
@@ -191,7 +197,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <DebugMode>k__BackingField: 1
   <HorizontalAngle>k__BackingField: 120
-  <VerticalAngle>k__BackingField: 90
+  <VerticalAngle>k__BackingField: 120
   <MaxDistance>k__BackingField: 10
   <FindCollider>k__BackingField: {fileID: 2311979114106391260}
   <TargetMask>k__BackingField:

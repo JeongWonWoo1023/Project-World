@@ -17,5 +17,7 @@ public class PlayerCurrentData : CharacterCurrentData
     public Vector3 JumpForce { get; set; } // 현재 점프력
 
     public RotationData RotationData { get; set; } // 현재 방향 데이터
+
+    public float UltimadomCoolTime { get; set; } // 궁극기 쿨타임
 }
 

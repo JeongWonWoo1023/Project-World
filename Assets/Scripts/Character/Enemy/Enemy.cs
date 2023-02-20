@@ -8,9 +8,11 @@ public class Enemy : CharacterBattle
     [field: SerializeField] public EnemyScriptableData Data { get; private set; }
     [field: SerializeField] public ItemDropTable DropTable { get; private set; }
     [field: SerializeField] public FindTargetUtility FindTargetUtility { get; private set; }
+    [field: SerializeField] public TimeManager AttackTimeUtil { get; set; }
     [field: SerializeField] public Transform UITrakingOffset { get; private set; }
     private EnemyStateMachine _stateMachine;
 
+    public EnemySpawnPoint SpawnPoint { get; set; }
     public Animator Anim { get; private set; }
     public Rigidbody Rigid { get; private set; }
     public NavMeshAgent NavAgent { get; private set; }
@@ -45,6 +47,7 @@ public class Enemy : CharacterBattle
         EnemyUITrakingTrans = UITrakingOffset;
         Anim = GetComponentInChildren<Animator>();
         SetRigidbody();
+        hitSound = Data.HitSound;
     }
 
     private void Update()

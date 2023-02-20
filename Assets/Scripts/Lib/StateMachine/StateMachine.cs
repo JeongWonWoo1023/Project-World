@@ -17,6 +17,7 @@ public abstract class StateMachine
     public void OnAnimationEnterEvent() => currentState?.OnAnimationEnter();
     public void OnAnimationExitEvent() => currentState?.OnAnimationExit();
     public void OnAnimationTransitionEvent() => currentState?.OnAnimationTransition();
+    public void OnAnimationAttackEvent() => currentState?.OnAnimationAttackEvent();
     public void OnTriggerEnter(Collider collider) => currentState?.OnTriggerEnter(collider);
     public void OnTriggerStay(Collider collider) => currentState?.OnTriggerStay(collider);
     public void OnTriggerExit(Collider collider) => currentState?.OnTriggerExit(collider);

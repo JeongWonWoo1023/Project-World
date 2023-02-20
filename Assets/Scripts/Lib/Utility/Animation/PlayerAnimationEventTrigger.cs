@@ -34,6 +34,11 @@ public class PlayerAnimationEventTrigger : MonoBehaviour
         player.OnMovementStateAnimationTransition();
     }
 
+    public void TriggerOnAttackStateAnimation()
+    {
+        player.OnAttackStateAnimationEvent();
+    }
+
     private bool IsInAnimationTrasition(int index = 0)
     {
         return player.Anim.IsInTransition(index);

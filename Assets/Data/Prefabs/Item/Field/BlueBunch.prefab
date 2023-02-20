@@ -1,0 +1,139 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1200574132024283357
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2009339235200715367}
+  - component: {fileID: 3192279137077937602}
+  - component: {fileID: 840404840197337352}
+  - component: {fileID: 7793077622176684806}
+  - component: {fileID: 8135648770515782500}
+  m_Layer: 10
+  m_Name: BlueBunch
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2009339235200715367
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200574132024283357}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 20, y: 20, z: 20}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &3192279137077937602
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200574132024283357}
+  m_Mesh: {fileID: 8140051180476985714, guid: 66a5a9f77f0b1654f93fe986049a95f8, type: 3}
+--- !u!23 &840404840197337352
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200574132024283357}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: dfea1c88bec0df0448dc397be0db0426, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7793077622176684806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200574132024283357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6e209b2c8188d24fb18ff26f8f03cc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <SpawnPoint>k__BackingField: {fileID: 0}
+  <IsInstalled>k__BackingField: 0
+  <UpgradeRequireItem>k__BackingField: []
+  _info:
+    <Category>k__BackingField: 2
+    <Icon>k__BackingField: {fileID: 21300000, guid: fe9206383b6d8cc40ab3685c158bf99d, type: 3}
+    <ItemObject>k__BackingField: {fileID: 1200574132024283357}
+    <RegenCoolTime>k__BackingField:
+      hour: 0
+      minute: 0
+      second: 0
+    <IsUsable>k__BackingField: 0
+    <IsDropable>k__BackingField: 1
+    <IsUpgradable>k__BackingField: 0
+    <Name>k__BackingField: "\uD478\uB978\uB2E4\uBC1C\uBC84\uC12F"
+    <Type>k__BackingField: "\uC7AC\uB8CC"
+    <ItemDescription>k__BackingField: "\uD478\uB978\uBE5B\uC744\uB744\uB294 \uD654\uB824\uD55C
+      \uB2E4\uBC1C\uBC84\uC12F\uC774\uB2E4 \uB3C5\uC131\uC774 \uC788\uC9C0\uB9CC
+      \uC798 \uC81C\uB3C5\uD558\uBA74 \uC57D\uC7AC\uB85C \uC0AC\uC6A9\uD560 \uC218
+      \uC788\uB2E4"
+    <EffectDescription>k__BackingField: 
+    <Rank>k__BackingField: 0
+    <Level>k__BackingField: 1
+    <DropValueRange>k__BackingField: {x: 1, y: 1}
+    <Weight>k__BackingField: 0.01
+  _status: []
+--- !u!64 &8135648770515782500
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200574132024283357}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 8140051180476985714, guid: 66a5a9f77f0b1654f93fe986049a95f8, type: 3}

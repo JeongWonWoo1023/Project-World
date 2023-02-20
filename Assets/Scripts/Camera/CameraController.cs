@@ -24,7 +24,6 @@ public class CameraController : MonoBehaviour
     {
         framingTransposer = GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineFramingTransposer>();
         inputProvider = GetComponent<CinemachineInputProvider>();
-
         currentDistance = defaultDistance; // 기본 거리로 초기화
     }
 

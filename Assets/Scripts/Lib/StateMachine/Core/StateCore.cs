@@ -1,4 +1,3 @@
-using UnityEditorInternal;
 using UnityEngine;
 
 public class StateCore : IState
@@ -6,7 +5,7 @@ public class StateCore : IState
     #region IState 인터페이스 메소드
     public virtual void Enter()
     {
-        Debug.Log($"Current Enemy State : {GetType().Name}"); // 해당 상태명 출력
+        Debug.Log($"Current State : {GetType().Name}"); // 해당 상태명 출력
     }
 
     public virtual void Exit()
@@ -40,6 +39,11 @@ public class StateCore : IState
     }
 
     public virtual void OnAnimationTransition()
+    {
+
+    }
+
+    public virtual void OnAnimationAttackEvent()
     {
 
     }

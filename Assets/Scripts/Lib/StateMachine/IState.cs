@@ -13,6 +13,7 @@ public interface IState : ITrigger
     public void OnAnimationEnter();
     public void OnAnimationExit();
     public void OnAnimationTransition();
+    public void OnAnimationAttackEvent();
 
 }
 

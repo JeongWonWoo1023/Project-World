@@ -109,9 +109,18 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""GetItem"",
+                    ""name"": ""Interaction"",
                     ""type"": ""Button"",
                     ""id"": ""b24730ee-5f22-4571-93ba-92139eeafaf0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UltimadomSkiil"",
+                    ""type"": ""Button"",
+                    ""id"": ""12f5e1c3-6453-47a8-8d0c-9190557c7f5b"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -291,7 +300,18 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""GetItem"",
+                    ""action"": ""Interaction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""18d12644-d946-4259-8cf2-c04cb9ae9d07"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UltimadomSkiil"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -318,6 +338,15 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Cursor"",
+                    ""type"": ""Button"",
+                    ""id"": ""07830731-a7ae-4ac1-9477-8ef66b247638"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -340,6 +369,17 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2027be3c-0779-421d-9c5b-b1156d286c60"",
+                    ""path"": ""<Keyboard>/leftAlt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cursor"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -387,11 +427,13 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_NormalAttack = m_Player.FindAction("NormalAttack", throwIfNotFound: true);
         m_Player_StrongAttack = m_Player.FindAction("StrongAttack", throwIfNotFound: true);
-        m_Player_GetItem = m_Player.FindAction("GetItem", throwIfNotFound: true);
+        m_Player_Interaction = m_Player.FindAction("Interaction", throwIfNotFound: true);
+        m_Player_UltimadomSkiil = m_Player.FindAction("UltimadomSkiil", throwIfNotFound: true);
         // UIControl
         m_UIControl = asset.FindActionMap("UIControl", throwIfNotFound: true);
         m_UIControl_Pause = m_UIControl.FindAction("Pause", throwIfNotFound: true);
         m_UIControl_Inventory = m_UIControl.FindAction("Inventory", throwIfNotFound: true);
+        m_UIControl_Cursor = m_UIControl.FindAction("Cursor", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -460,7 +502,8 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_NormalAttack;
     private readonly InputAction m_Player_StrongAttack;
-    private readonly InputAction m_Player_GetItem;
+    private readonly InputAction m_Player_Interaction;
+    private readonly InputAction m_Player_UltimadomSkiil;
     public struct PlayerActions
     {
         private @PlayerAction m_Wrapper;
@@ -474,7 +517,8 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @NormalAttack => m_Wrapper.m_Player_NormalAttack;
         public InputAction @StrongAttack => m_Wrapper.m_Player_StrongAttack;
-        public InputAction @GetItem => m_Wrapper.m_Player_GetItem;
+        public InputAction @Interaction => m_Wrapper.m_Player_Interaction;
+        public InputAction @UltimadomSkiil => m_Wrapper.m_Player_UltimadomSkiil;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -511,9 +555,12 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                 @StrongAttack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnStrongAttack;
                 @StrongAttack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnStrongAttack;
                 @StrongAttack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnStrongAttack;
-                @GetItem.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGetItem;
-                @GetItem.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGetItem;
-                @GetItem.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGetItem;
+                @Interaction.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteraction;
+                @Interaction.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteraction;
+                @Interaction.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteraction;
+                @UltimadomSkiil.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnUltimadomSkiil;
+                @UltimadomSkiil.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnUltimadomSkiil;
+                @UltimadomSkiil.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnUltimadomSkiil;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -545,9 +592,12 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                 @StrongAttack.started += instance.OnStrongAttack;
                 @StrongAttack.performed += instance.OnStrongAttack;
                 @StrongAttack.canceled += instance.OnStrongAttack;
-                @GetItem.started += instance.OnGetItem;
-                @GetItem.performed += instance.OnGetItem;
-                @GetItem.canceled += instance.OnGetItem;
+                @Interaction.started += instance.OnInteraction;
+                @Interaction.performed += instance.OnInteraction;
+                @Interaction.canceled += instance.OnInteraction;
+                @UltimadomSkiil.started += instance.OnUltimadomSkiil;
+                @UltimadomSkiil.performed += instance.OnUltimadomSkiil;
+                @UltimadomSkiil.canceled += instance.OnUltimadomSkiil;
             }
         }
     }
@@ -558,12 +608,14 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
     private IUIControlActions m_UIControlActionsCallbackInterface;
     private readonly InputAction m_UIControl_Pause;
     private readonly InputAction m_UIControl_Inventory;
+    private readonly InputAction m_UIControl_Cursor;
     public struct UIControlActions
     {
         private @PlayerAction m_Wrapper;
         public UIControlActions(@PlayerAction wrapper) { m_Wrapper = wrapper; }
         public InputAction @Pause => m_Wrapper.m_UIControl_Pause;
         public InputAction @Inventory => m_Wrapper.m_UIControl_Inventory;
+        public InputAction @Cursor => m_Wrapper.m_UIControl_Cursor;
         public InputActionMap Get() { return m_Wrapper.m_UIControl; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -579,6 +631,9 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                 @Inventory.started -= m_Wrapper.m_UIControlActionsCallbackInterface.OnInventory;
                 @Inventory.performed -= m_Wrapper.m_UIControlActionsCallbackInterface.OnInventory;
                 @Inventory.canceled -= m_Wrapper.m_UIControlActionsCallbackInterface.OnInventory;
+                @Cursor.started -= m_Wrapper.m_UIControlActionsCallbackInterface.OnCursor;
+                @Cursor.performed -= m_Wrapper.m_UIControlActionsCallbackInterface.OnCursor;
+                @Cursor.canceled -= m_Wrapper.m_UIControlActionsCallbackInterface.OnCursor;
             }
             m_Wrapper.m_UIControlActionsCallbackInterface = instance;
             if (instance != null)
@@ -589,6 +644,9 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                 @Inventory.started += instance.OnInventory;
                 @Inventory.performed += instance.OnInventory;
                 @Inventory.canceled += instance.OnInventory;
+                @Cursor.started += instance.OnCursor;
+                @Cursor.performed += instance.OnCursor;
+                @Cursor.canceled += instance.OnCursor;
             }
         }
     }
@@ -622,11 +680,13 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnNormalAttack(InputAction.CallbackContext context);
         void OnStrongAttack(InputAction.CallbackContext context);
-        void OnGetItem(InputAction.CallbackContext context);
+        void OnInteraction(InputAction.CallbackContext context);
+        void OnUltimadomSkiil(InputAction.CallbackContext context);
     }
     public interface IUIControlActions
     {
         void OnPause(InputAction.CallbackContext context);
         void OnInventory(InputAction.CallbackContext context);
+        void OnCursor(InputAction.CallbackContext context);
     }
 }

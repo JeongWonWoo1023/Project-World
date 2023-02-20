@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c23a9a6c1304d843a7ed242d4a5c3b0, type: 3}
+  m_Name: Tutorial1Goal
+  m_EditorClassIdentifier: 
+  RequireAmount: 4
+  GoalCompleted:
+    m_PersistentCalls:
+      m_Calls: []
+  Range: 2
+  Destination:
+  - {x: 468.8237, y: 49.990845, z: 802.0768}
+  - {x: 468.45703, y: 49.990837, z: 783.6771}
+  - {x: 495.05124, y: 49.99082, z: 784.02673}
+  - {x: 496.9711, y: 49.990845, z: 800.44196}
+  PickingObj: {fileID: 5542456854047487392, guid: 0ea6549ab56bab249a891d5c5b826881, type: 3}

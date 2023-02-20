@@ -7,7 +7,6 @@ public class PlayerMovementState : PlayerStateCore
     #region 필드 & 프로퍼티
     protected P_GroundedData groundedData; // 지면 이동 관련 데이터
     protected P_AirborneData airborneData; // 공중 이동 관련 데이터
-    protected MovementMathUtillity movementUtil; // 이동 연산 유틸리티
     #endregion
 
     #region 생성자
@@ -16,7 +15,6 @@ public class PlayerMovementState : PlayerStateCore
         // 데이터 바인딩
         groundedData = stateMachine.Player.Data.Movement.GroundedData;
         airborneData = stateMachine.Player.Data.Movement.AirborneData;
-        movementUtil = new MovementMathUtillity();
 
         SetBaseCameraRecenteringData();
         InitializeData();
@@ -27,11 +25,6 @@ public class PlayerMovementState : PlayerStateCore
     public override void Enter()
     {
         base.Enter();
-    }
-
-    public override void HandleInput()
-    {
-        ReadMovementInput();
     }
 
     public override void PhysicalProcess()
@@ -68,16 +61,11 @@ public class PlayerMovementState : PlayerStateCore
     #endregion
 
     #region 메인 메소드
-    // 입력 값 적용
-    private void ReadMovementInput()
-    {
-        stateMachine.Current.MovementInput = stateMachine.Player.Input.InGameActions.Movement.ReadValue<Vector2>();
-    }
 
     // 이동
     private void Move() 
     {
-        // 아무 키 입력이 없거나 이동속도 계수가 0일 경우 리턴
+        // 아무 키 입력이 없거나 이동속도 계수가 0일 경우 혹은 공격중일 경우 리턴
         if (stateMachine.Current.MovementInput == Vector2.zero || stateMachine.Current.MovementSpeedCoef == 0.0f)
         {
             return;
@@ -94,18 +82,11 @@ public class PlayerMovementState : PlayerStateCore
         stateMachine.Player.Rigid.AddForce(targetDirection * speed - velocity, ForceMode.VelocityChange);
     }
 
-    private float Rotate(Vector3 dir)
+    protected float Rotate(Vector3 dir)
     {
         float angle = UpdateTargetRotation(dir);
         RotateToTargetRotation();
         return angle;
-    }
-
-    // 목표 각도로 현재 각도값 갱신
-    private void UpdateRotationData(float targetAngle)
-    {
-        stateMachine.Current.CurrentTargetRotation.y = targetAngle;
-        stateMachine.Current.DampedTargetRotationPassedTime.y = 0.0f;
     }
     #endregion
 
@@ -125,12 +106,6 @@ public class PlayerMovementState : PlayerStateCore
         stateMachine.Current.SidewayCameraRecenteringData = groundedData.SidewayCameraRecenteringData;
     }
 
-    // 이동 방향 반환
-    protected Vector3 GetInputDirection()
-    {
-        return new Vector3(stateMachine.Current.MovementInput.x, 0.0f, stateMachine.Current.MovementInput.y);
-    }
-
     // 이동속도 반환
     protected float GetMovementSpeed(bool isConsiderSlope = true)
     {
@@ -141,25 +116,6 @@ public class PlayerMovementState : PlayerStateCore
             movementSpeed *= stateMachine.Current.MovementOnSlopeSpeed;
         }
         return movementSpeed;
-    }
-
-    // 각도값 갱신
-    protected float UpdateTargetRotation(Vector3 direction, bool isAdd = true)
-    {
-        float angle = movementUtil.GetTargetAtanAngle(direction); // 이동방향 각도값
-
-        if (isAdd) // 양의 방향으로 회전인 경우
-        {
-            movementUtil.AddRotationAngle(ref angle, stateMachine.Player.MainCameraTrans.eulerAngles.y);
-        }
-
-        // 각도값이 현재 바라보는 방향의 각도와 다를 경우
-        if (angle != stateMachine.Current.CurrentTargetRotation.y)
-        {
-            UpdateRotationData(angle);
-        }
-
-        return angle;
     }
 
     // 목표 방향으로 회전
@@ -329,8 +285,9 @@ public class PlayerMovementState : PlayerStateCore
         UpdateCameraRecenteringState(stateMachine.Current.MovementInput);
     }
 
-    protected void OnMovementPerformed(InputAction.CallbackContext context)
+    protected override void OnMovementPerformed(InputAction.CallbackContext context)
     {
+        base.OnMovementPerformed(context);
         UpdateCameraRecenteringState(context.ReadValue<Vector2>());
     }
 

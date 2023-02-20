@@ -6,8 +6,6 @@ public class EnemyMovementState : EnemyStateCore
     protected MovementMathUtillity movementUtil;
     protected EnemyMovementData movementData;
 
-    protected Vector3 targetDirection;
-
     #region 생성자
     public EnemyMovementState(EnemyStateMachine _stateMachine) : base(_stateMachine)
     {
@@ -26,7 +24,7 @@ public class EnemyMovementState : EnemyStateCore
             agent.isStopped = false;
         }
         agent.speed = movementData.BaseMovementSpeed;
-        Rotate(targetDirection);
+        Rotate(stateMachine.Current.KeepAgentVelocity);
         stateMachine.Current.PathCount = 0;
     }
 

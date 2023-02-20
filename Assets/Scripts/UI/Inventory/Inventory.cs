@@ -8,7 +8,7 @@ public class Inventory : Popup
     [field: Header("텍스트")]
     [field: SerializeField] public TMPro.TMP_Text CategoryName { get; private set; }
     [field: SerializeField] public TMPro.TMP_Text BagWeigh { get; private set; }
-    [field: SerializeField] public TMPro.TMP_Text Gold { get; private set; }
+    [field: SerializeField] public TMPro.TMP_Text GoldText { get; private set; }
     [field: SerializeField] public TMPro.TMP_Text ItemName { get; private set; }
     [field: SerializeField] public TMPro.TMP_Text ItemType { get; private set; }
     [field: SerializeField] public TMPro.TMP_Text ItemTotalStatusName { get; private set; }
@@ -32,6 +32,7 @@ public class Inventory : Popup
     [field: SerializeField] public int MaxWeight { get; private set; } = 2000;
 
     public float TotalBagWeight { get; private set; }
+    public int Gold { get; set; }
 
     private List<ItemSlot> slots = new List<ItemSlot>();
     private string slotResourcePath = "Prefabs/UI/Slot";
@@ -108,7 +109,6 @@ public class Inventory : Popup
         ItemSlot targetSlot = FindSlot(item);
         targetSlot.ItemCount += count;
         TotalBagWeight += GetItemWeight(targetSlot.Item.Info.Weight, targetSlot.ItemCount);
-        AddSlotEvent(targetSlot);
         UpdateBagWeight((int)TotalBagWeight, MaxWeight);
     }
 
@@ -121,12 +121,19 @@ public class Inventory : Popup
         UpdateBagWeight((int)TotalBagWeight, MaxWeight);
     }
 
+    public void ShowItem(Item item, int count)
+    {
+        // 아이템 인벤토리에 보여지기
+        ItemSlot targetSlot = FindSlot(item);
+        targetSlot.ItemCount = count;
+    }
+
     public ItemSlot FindSlot(Item item)
     {
         // 아이템 탐색 후 아이템이 있는 슬롯 반환
         foreach (ItemSlot slot in slots)
         {
-            if (!slot.Item.Info.Name.Equals(item.Info.Name))
+            if (slot.Item.Info.Name.Equals(item.Info.Name))
             {
                 return slot;
             }
@@ -146,7 +153,10 @@ public class Inventory : Popup
 
         for(int i = 0; data != null && i < data.itemInfo.Count && data.itemInfo.Count != 0;++i)
         {
-            AddItem(data.itemInfo[i].ItemObject.GetComponent<Item>(), data.itemCount[i]);
+            Item item = new Item();
+            item.Info = data.itemInfo[i];
+            item.Status = data.itemStatus[i].status;
+            ShowItem(item, data.itemCount[i]);
         }
         UpdateBagWeight((int)TotalBagWeight, MaxWeight);
     }
@@ -160,6 +170,16 @@ public class Inventory : Popup
             ItemName.text = slot.Item.Info.Name;
             ItemType.text = slot.Item.Info.Type;
             ItemIcon.sprite = slot.Icon.sprite;
+            if(slot.Item.Info.Category == ItemCategory.Weapon)
+            {
+                ItemTotalStatusName.gameObject.SetActive(true);
+                ItemTotalStatusValue.gameObject.SetActive(true);
+            }
+            else
+            {
+                ItemTotalStatusName.gameObject.SetActive(false);
+                ItemTotalStatusValue.gameObject.SetActive(false);
+            }
             ItemEffectDescription.text = slot.Item.Info.EffectDescription;
             ItemDescription.text = slot.Item.Info.ItemDescription;
             UpdateItemRank(slot);
@@ -218,7 +238,7 @@ public class Inventory : Popup
         // 아이템 탐색 후 해당 아이템 반환 없을 경우 null 반환
         foreach (ItemSlot slot in slots)
         {
-            if (!slot.Item.Info.Name.Equals(item.Info.Name))
+            if (slot.Item.Info.Name.Equals(item.Info.Name))
             {
                 return slot.Item;
             }
@@ -261,13 +281,13 @@ public class Inventory : Popup
             data.itemCount.Add(slot.ItemCount);
         }
         data.gold = 0; // 임시값 ( 게임 중앙 매니저에서 가져와야 함 )
-        DataManager.Instance.SaveData(data, "Data/Save/Inventory", typeof(InventorySaveData).Name);
+        DataManager.Instance.SaveJson(data, typeof(InventorySaveData).Name);
     }
 
     private InventorySaveData LoadInventory()
     {
         // 인벤토리 로드
-        InventorySaveData result = DataManager.Instance.LoadData<InventorySaveData>("Data/Save/Inventory",typeof(InventorySaveData).Name);
+        InventorySaveData result = DataManager.Instance.LoadJson<InventorySaveData>(typeof(InventorySaveData).Name);
         if(result == null)
         {
             return null;

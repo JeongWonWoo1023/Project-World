@@ -16,6 +16,7 @@ public class CharacterBattle : MonoBehaviour, IBattle
     private float _skiilDamageCoef;
 
     private EnemyStatusUI _enemyStatusUI = null;
+    protected AudioClip hitSound;
 
     // 레벨 프로퍼티
     public int Level
@@ -91,6 +92,11 @@ public class CharacterBattle : MonoBehaviour, IBattle
         set
         {
             _currentEXP = value;
+            if(CurrentEXP >= status.Experience.Point)
+            {
+                LevelUP();
+            }
+
             if (ConnectUI.EXPBar == null)
             {
                 // MP가 없는경우 리턴
@@ -104,6 +110,14 @@ public class CharacterBattle : MonoBehaviour, IBattle
             }
             ConnectUI.EXPBar.ValueInfo.text = $"{CurrentEXP} / {status.Experience.Point} ( {(GetRatio(status.Experience.Point, CurrentEXP) * 100.0f).ToString("F2")}% )";
         }
+    }
+
+    private void LevelUP()
+    {
+        int temp = CurrentEXP - status.Experience.Point;
+        Level++;
+        status.Experience.Point = (int)(status.Experience.Point * 1.5f);
+        CurrentEXP = temp;
     }
 
     // 사망여부 값 프로퍼티 ( UI 연동 )
@@ -157,10 +171,22 @@ public class CharacterBattle : MonoBehaviour, IBattle
     }
 
     #region IBattle 인터페이스 메소드
-    public void AttackTarget()
+    public void AttackTarget(float customRange = 0.0f, int costMana = 0)
     {
-        Vector3 center = weapon.transform.position; // 무기 원점으로 변경 필요
-        Collider[] targets = Physics.OverlapSphere(center, weapon.radius, targetMask, QueryTriggerInteraction.Ignore); // 무기 공격 범위 적용 필요
+        Vector3 center = weapon.transform.position;
+        if(costMana > 0 && CurrentMP >= costMana)
+        {
+            CurrentMP -= costMana;
+        }
+        Collider[] targets = { };
+        if (customRange == 0.0f)
+        {
+            targets = Physics.OverlapSphere(center, weapon.radius, targetMask, QueryTriggerInteraction.Ignore); // 무기 공격 범위 적용
+        }
+        else
+        {
+            targets = Physics.OverlapSphere(center, customRange, targetMask, QueryTriggerInteraction.Ignore); // 커스텀 공격 범위 적용
+        }
 
         foreach (Collider target in targets)
         {
@@ -203,6 +229,8 @@ public class CharacterBattle : MonoBehaviour, IBattle
         SetEnemyUI();
         CurrentHP -= damage;
         IsHit = true;
+        SoundManager.Instance.mixer.GetFloat("SoundEffect", out float volum);
+        SoundManager.Instance.soundEffectSource.PlayOneShot(hitSound, volum);
 
         // 체력이 0 미만으로 내려갔을 경우
         if (CurrentHP <= 0)

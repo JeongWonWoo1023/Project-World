@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad58bf4d26910f04da239ea0565f63de, type: 3}
+  m_Name: Ultimadom
+  m_EditorClassIdentifier: 
+  <Effect>k__BackingField: {fileID: 5590830392276278626, guid: 8ac42a3e78bf8ea49a91a3c2b43c8875, type: 3}
+  <HitCount>k__BackingField: 7
+  <Damages>k__BackingField:
+  - 2.4
+  - 1.3
+  - 1.3
+  - 1.3
+  - 1.3
+  - 1.3
+  - 1.3
+  <Sounds>k__BackingField:
+  - {fileID: 8300000, guid: a6076e8448157bd48b3982a24f22097d, type: 3}
+  - {fileID: 8300000, guid: f785584b76570ce448b83b0ab565c6a0, type: 3}
+  - {fileID: 8300000, guid: f785584b76570ce448b83b0ab565c6a0, type: 3}
+  - {fileID: 8300000, guid: f785584b76570ce448b83b0ab565c6a0, type: 3}
+  - {fileID: 8300000, guid: f785584b76570ce448b83b0ab565c6a0, type: 3}
+  - {fileID: 8300000, guid: f785584b76570ce448b83b0ab565c6a0, type: 3}
+  - {fileID: 8300000, guid: f785584b76570ce448b83b0ab565c6a0, type: 3}
+  <Cost>k__BackingField: 150

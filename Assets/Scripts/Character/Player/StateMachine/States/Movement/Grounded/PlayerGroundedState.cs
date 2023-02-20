@@ -122,7 +122,9 @@ public class PlayerGroundedState : PlayerMovementState
 
         stateMachine.Player.Input.InGameActions.Jump.started += OnJumpStared;
 
-        stateMachine.Player.Input.InGameActions.NormalAttack.performed += OnNormalAtackPerformed;
+        stateMachine.Player.Input.InGameActions.NormalAttack.performed += OnNormalAtackAction;
+
+        stateMachine.Player.Input.InGameActions.UltimadomSkiil.performed += OnUltimadom;
     }
 
     protected override void RemoveInputAction()
@@ -133,7 +135,9 @@ public class PlayerGroundedState : PlayerMovementState
 
         stateMachine.Player.Input.InGameActions.Jump.started -= OnJumpStared;
 
-        stateMachine.Player.Input.InGameActions.NormalAttack.performed -= OnNormalAtackPerformed;
+        stateMachine.Player.Input.InGameActions.NormalAttack.performed -= OnNormalAtackAction;
+
+        stateMachine.Player.Input.InGameActions.UltimadomSkiil.performed -= OnUltimadom;
     }
 
     protected override void OnContactGroundExited(Collider collider)
@@ -158,6 +162,11 @@ public class PlayerGroundedState : PlayerMovementState
     #region 재사용 가상 메소드
     protected virtual void OnMove()
     {
+        if(stateMachine.Current.IsAttak)
+        {
+            return;
+        }
+
         if (stateMachine.Current.IsSprint)
         {
             stateMachine.ChangeState(stateMachine.Sprint);
@@ -180,22 +189,35 @@ public class PlayerGroundedState : PlayerMovementState
     #region 입력 메소드
     protected virtual void OnDashStarted(InputAction.CallbackContext context)
     {
+        if(stateMachine.Current.IsAttak)
+        {
+            return;
+        }
         stateMachine.ChangeState(stateMachine.Dash);
     }
 
     protected virtual void OnJumpStared(InputAction.CallbackContext context)
     {
+        if (stateMachine.Current.IsAttak)
+        {
+            return;
+        }
         stateMachine.ChangeState(stateMachine.Jump);
     }
 
-    protected void OnNormalAtackPerformed(InputAction.CallbackContext context)
+    protected override void OnNormalAtackAction(InputAction.CallbackContext context)
     {
         // 기본공격 상태로 전환
-        if(UIManager.Instance.IsPause)
+        if(UIManager.Instance.IsPause || UIManager.Instance.IsTalk)
         {
             return;
         }
         stateMachine.ChangeState(stateMachine.NormalAttack);
+    }
+
+    protected override void OnUltimadom(InputAction.CallbackContext context)
+    {
+        base.OnUltimadom(context);
     }
     #endregion
 }

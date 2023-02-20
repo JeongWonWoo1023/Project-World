@@ -17,6 +17,7 @@ public struct ItemInfo
     [field: SerializeField] public ItemCategory Category { get; private set; } // 아이템 카테고리 ( 장비, 소비, 전리품, 기타 )
     [field: SerializeField] public Sprite Icon { get; private set; } // 아이템 아이콘
     [field: SerializeField] public GameObject ItemObject { get; private set; }  // 아이템 오브젝트
+    [field: SerializeField] public TimeData RegenCoolTime { get; private set; }  // 리젠 쿨타임
 
     [field: SerializeField] public bool IsUsable { get; private set; }  // 아이템 사용 & 장착 가능 여부
     [field: SerializeField] public bool IsDropable { get; private set; }  // 필드 드랍 여부

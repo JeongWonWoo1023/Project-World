@@ -15,6 +15,7 @@ public class EnemyStateMachine : StateMachine
     public EnemyAttackState Attack { get; } // 공격
     public EnemyHitState Hit { get; } // 피격
     public EnemyDeadState Dead { get; } // 사망
+    public EnemyIdleState Idle { get; } // 정지상태
     #endregion
 
     #region 생성자
@@ -29,6 +30,7 @@ public class EnemyStateMachine : StateMachine
         Attack = new EnemyAttackState(this);
         Hit = new EnemyHitState(this);
         Dead = new EnemyDeadState(this);
+        Idle = new EnemyIdleState(this);
     }
     #endregion
 }

@@ -230,7 +230,7 @@ MonoBehaviour:
       <Point>k__BackingField: 1000
     <AttackType>k__BackingField: 0
     <Attack>k__BackingField:
-      <Defualt>k__BackingField: 30
+      <Defualt>k__BackingField: 15
       <Coef>k__BackingField: 0.5
       <PhysicalPenetration>k__BackingField: 0.1
       <MagicalPenetration>k__BackingField: 0.1
@@ -246,3 +246,4 @@ MonoBehaviour:
       <HpCoef>k__BackingField: 30
       <MaxMp>k__BackingField: 300
       <MpCoef>k__BackingField: 10
+  <HitSound>k__BackingField: {fileID: 8300000, guid: 6792864791c94da43ac1a0db33ad4dd1, type: 3}

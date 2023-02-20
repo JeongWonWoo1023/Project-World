@@ -8,9 +8,15 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerInput))]
 public class Player : CharacterBattle
 {
+    public string nickName;
+
     [field:Header("참조 데이터")]
     [field: SerializeField] public PlayerScriptableData Data { get; private set; } // 이동 관련 데이터
-    [field: SerializeField] public ItemDetector ItemDetector { get; private set; } // 아이템 감지기
+    [field: SerializeField] public NearObjectDetector NearDetector { get; private set; } // 아이템 감지기
+    [field: SerializeField] public Transform Hand { get; private set; } // 이펙트 위치, 회전 적용을 위한 손 트랜스폼
+    [field: SerializeField] public SkiilData NormalAttack { get; private set; }
+    [field: SerializeField] public SkiilData StrongAttack { get; private set; }
+    [field: SerializeField] public SkiilData Ultimadom { get; private set; }
 
     [field: Header("콜라이더")]
     [field: SerializeField] public PlayerCapsuleColliderUtil ColliderUtil { get; private set; } // 콜라이더 설정 유틸리티
@@ -59,11 +65,20 @@ public class Player : CharacterBattle
         ColliderUtil.CalCollierDimension();
         CameraUtil.Initialize();
         AnimationData.Initialize();
+        hitSound = Data.HitSound;
 
         MainCameraTrans = Camera.main.transform;
 
         // 스탯 초기화
         PlayerSaveData data = LoadStatus();
+        if(data.nickName == string.Empty)
+        {
+            nickName = "닉네임설정은최대12글자까지";
+        }
+        else
+        {
+            nickName = data.nickName;
+        }
         if (data == null)
         {
             InitializeStatus(Data.DefualtStatus);
@@ -143,6 +158,11 @@ public class Player : CharacterBattle
         stateMachine.OnAnimationTransitionEvent();
     }
 
+    public void OnAttackStateAnimationEvent()
+    {
+        stateMachine.OnAnimationAttackEvent();
+    }
+
     private void SaveStatus()
     {
         // 스탯 데이터 세이브
@@ -150,18 +170,19 @@ public class Player : CharacterBattle
         {
             _saveData = new PlayerSaveData();
         }
+        _saveData.nickName = nickName;
         _saveData.status = status;
         _saveData.level = Level;
         _saveData.currentHP = CurrentHP;
         _saveData.currentMP = CurrentMP;
         _saveData.currentEXP = CurrentEXP;
-        DataManager.Instance.SaveData(_saveData,"Data/Save/Player",typeof(PlayerSaveData).Name);
+        DataManager.Instance.SaveJson(_saveData,typeof(PlayerSaveData).Name);
     }
 
     private PlayerSaveData LoadStatus()
     {
         // 스탯 데이터 로드
-        PlayerSaveData result = DataManager.Instance.LoadData<PlayerSaveData>("Data/Save/Player", typeof(PlayerSaveData).Name);
+        PlayerSaveData result = DataManager.Instance.LoadJson<PlayerSaveData>(typeof(PlayerSaveData).Name);
         if (result == null)
         {
             return null;

@@ -12,12 +12,14 @@ public class PlayerBattleState : PlayerStateCore
     public override void Enter()
     {
         base.Enter();
+        stateMachine.Current.IsAttak = true;
         StartAnimation(stateMachine.Player.AnimationData.BattleParameterHash);
     }
 
     public override void Exit()
     {
         base.Exit();
+        stateMachine.Current.IsAttak = false;
         StopAnimation(stateMachine.Player.AnimationData.BattleParameterHash);
     }
     #endregion
@@ -27,8 +29,6 @@ public class PlayerBattleState : PlayerStateCore
     protected override void AddInputAction()
     {
         base.AddInputAction();
-        stateMachine.Player.Input.InGameActions.NormalAttack.started += OnNormalAtack;
-        stateMachine.Player.Input.InGameActions.StrongAttack.started += OnStrongAttack;
     }
 
     // 입력 콜백 등록 해제
@@ -39,10 +39,6 @@ public class PlayerBattleState : PlayerStateCore
     #endregion
 
     #region 입력 메소드
-    protected virtual void OnNormalAtack(InputAction.CallbackContext context)
-    {
-        // 다음 모션으로 전환
-    }
 
     protected virtual void OnStrongAttack(InputAction.CallbackContext obj)
     {

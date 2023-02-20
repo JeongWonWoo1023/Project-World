@@ -22,6 +22,10 @@ public class PlayerStateMachine : StateMachine
     public P_HardLandindState HardLanding { get; } // 높은 높이에서의 착지
 
     public PlayerNormalAttackState NormalAttack { get; } // 기본공격
+    public PlayerStrongAttackState StrongAttack { get; } // 강공격
+    public PlayerUltimadomSkiilState Ultimadom { get; } // 궁극기
+    public PlayerHitState Hit { get; } // 피격
+    public PlayerDeadState Dead { get; } // 사망
     #endregion
 
     #region 생성자
@@ -48,6 +52,10 @@ public class PlayerStateMachine : StateMachine
         HardLanding = new P_HardLandindState(this);
 
         NormalAttack = new PlayerNormalAttackState(this);
+        StrongAttack = new PlayerStrongAttackState(this);
+        Ultimadom = new PlayerUltimadomSkiilState(this);
+        Hit = new PlayerHitState(this);
+        Dead = new PlayerDeadState(this);
     }
     #endregion
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerSaveData : SaveData
 {
+    public string nickName;
     public StatusData status = new StatusData();
     public int level;
     public int currentHP;

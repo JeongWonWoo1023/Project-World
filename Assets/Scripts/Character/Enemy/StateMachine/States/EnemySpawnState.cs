@@ -38,7 +38,6 @@ public class EnemySpawnState : EnemyStateCore
     protected virtual void Initialize()
     {
         stateMachine.Enemy.IsDead = false; // 사망하지 않은 상태로 초기화
-        stateMachine.Current.SpawnPoint = stateMachine.Enemy.transform.position; // 스폰지점 초기화
         stateMachine.Current.PathCount = 0; // 이동 패스 초기화
         stateMachine.Enemy.gameObject.SetActive(true);
         TypeToTransition();

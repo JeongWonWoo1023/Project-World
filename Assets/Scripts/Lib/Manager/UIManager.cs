@@ -9,6 +9,8 @@ public class UIManager : Singleton<UIManager>
     [field: SerializeField] public Transform Canvas { get; private set; }
     [field: SerializeField] public Message MessageBox { get; private set; }
     [field: SerializeField] public Inventory Inventory { get; private set; }
+    [field: SerializeField] public TalkDialog TalkDialog { get; private set; }
+    [field: SerializeField] public GameSetting Setting { get; private set; }
     [field: SerializeField] public Animator UIAnimator { get; private set; }
     [field: SerializeField] public UIAnimationKeyward AnimationKeyward { get; private set; }
     [field: SerializeField] public RectTransform EnemyUIParantTrans { get; private set; }
@@ -50,6 +52,53 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
+    private bool _isCursor;
+    public bool IsCursor
+    {
+        get => _isCursor;
+        set
+        {
+            _isCursor = value;
+            Cursor.visible = IsCursor;
+            Cursor.lockState = value ? CursorLockMode.None : CursorLockMode.Locked;
+        }
+    }
+
+    private bool _isTalk;
+    public bool IsTalk
+    {
+        get => _isTalk;
+        set
+        {
+            _isTalk = value;
+            if(IsTalk)
+            {
+                IsCursor = true;
+            }
+            else
+            {
+                IsCursor = false;
+            }
+            UIAnimator.SetBool(AnimationKeyward.OpneTalkKey, IsTalk);
+        }
+    }
+
+    private bool _isSetting;
+    public bool IsSetting
+    {
+        get => _isSetting;
+        set
+        {
+            _isSetting = value;
+            UIAnimator.SetBool(AnimationKeyward.OpneSettingKey, IsSetting);
+        }
+    }
+
+    private void Awake()
+    {
+        IsCursor = false;
+    }
+
     public bool OpneMessage(MessageFormat format)
     {
         // 메세지 박스 열기
@@ -80,6 +129,17 @@ public class UIManager : Singleton<UIManager>
         return true;
     }
 
+    public bool OpneSetting()
+    {
+        if(Setting == null)
+        {
+            return false;
+        }
+        IsSetting = true;
+        PopupStack.Push(Setting);
+        return true;
+    }
+
     public bool CloaePopup()
     {
         // 스택 최상위에 있는 팝업 닫기
@@ -98,4 +158,6 @@ public class UIAnimationKeyward
 {
     [field: SerializeField] public string PauseKey { get; private set; }
     [field: SerializeField] public string OpneFullScreecPopupKey { get; private set; }
+    [field: SerializeField] public string OpneTalkKey { get; private set; }
+    [field: SerializeField] public string OpneSettingKey { get; private set; }
 }

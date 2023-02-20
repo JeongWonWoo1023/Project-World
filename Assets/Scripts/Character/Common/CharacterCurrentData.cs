@@ -41,6 +41,7 @@ public class CharacterCurrentData
         }
     }
 
+    public bool IsAttak { get; set; } // 공격 중
     public bool IsDead { get; set; } // 사망
     public bool IsKnockback { get; set; } // 넉백
 }

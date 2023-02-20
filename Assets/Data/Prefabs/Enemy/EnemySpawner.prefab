@@ -59,6 +59,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <EnemyPrefab>k__BackingField: {fileID: 1337257571344354064, guid: d54c0245581a57a499ceba229c5593ee, type: 3}
-  contentInterval: 0
+  timeUtility:
+    <CollTime>k__BackingField:
+      hour: 0
+      minute: 0
+      second: 1
   moveType: 2
   routinePath: []

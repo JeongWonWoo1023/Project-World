@@ -23,6 +23,10 @@ public class EnemyStatusUI : MonoBehaviour
 
     private void Update()
     {
-        transform.position = Camera.main.WorldToScreenPoint(_traking.position);
+        Vector3 direction = _traking.position - Camera.main.transform.position;
+        if (Vector3.Dot(Camera.main.transform.forward, direction) > 0.0f)
+        {
+            transform.position = Camera.main.WorldToScreenPoint(_traking.position);
+        }
     }
 }

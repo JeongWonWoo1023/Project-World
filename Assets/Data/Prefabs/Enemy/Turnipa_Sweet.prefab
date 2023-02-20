@@ -69,7 +69,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1192803621045560329}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.7, z: 0}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -175,7 +175,13 @@ MonoBehaviour:
     m_Bits: 64
   weapon: {fileID: 5504756821558808211}
   <Data>k__BackingField: {fileID: 11400000, guid: 8a652dee399e4a84bbaa767d7ac1fc26, type: 2}
+  <DropTable>k__BackingField: {fileID: 0}
   <FindTargetUtility>k__BackingField: {fileID: 53446208352143733}
+  <AttackTimeUtil>k__BackingField:
+    <CoolTime>k__BackingField:
+      hour: 0
+      minute: 0
+      second: 5
   <UITrakingOffset>k__BackingField: {fileID: 2788416383269384547}
 --- !u!114 &53446208352143733
 MonoBehaviour:

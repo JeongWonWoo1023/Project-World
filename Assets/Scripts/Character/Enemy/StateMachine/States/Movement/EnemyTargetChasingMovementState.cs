@@ -21,14 +21,29 @@ public class EnemyTargetChasingMovementState : EnemyMovementState
         base.Move();
         float distance = Vector3.Distance(stateMachine.Enemy.transform.position, stateMachine.Current.TargetTrans.position);
 
-        Rotate(agent.velocity.normalized);
-        agent.SetDestination(stateMachine.Current.TargetTrans.position);
-        // 플레이어와의 거리가 2 미만인 경우
-        if(distance <= stateMachine.Enemy.GetAttackRange())
+        // 플레이어와의 거리가 공격범위 미만인 경우
+        if (distance <= stateMachine.Enemy.GetAttackRange() && stateMachine.Current.CoAttack == null)
         {
-            stateMachine.ChangeState(stateMachine.Attack);
+            stateMachine.Current.CoAttack = stateMachine.Enemy.StartCoroutine(stateMachine.Enemy.AttackTimeUtil.ApplyCoolTime(
+                () =>
+                {
+                    stateMachine.ChangeState(stateMachine.Attack);
+                },
+                null,
+                () =>
+                {
+                    distance = Vector3.Distance(stateMachine.Enemy.transform.position, stateMachine.Current.TargetTrans.position);
+                    if (distance <= stateMachine.Enemy.GetAttackRange())
+                    {
+                        stateMachine.ChangeState(stateMachine.Attack);
+                        stateMachine.Current.CoAttack = null;
+                        return;
+                    }
+                    stateMachine.ChangeState(stateMachine.TargetChasingMove);
+                    stateMachine.Current.CoAttack = null;
+                }));
         }
-        else if(distance > 8.0f)
+        else if(distance > stateMachine.Enemy.FindTargetUtility.MaxDistance)
         {
             stateMachine.Current.Delta += Time.deltaTime;
             if (stateMachine.Current.Delta > 3.0f)
@@ -46,6 +61,8 @@ public class EnemyTargetChasingMovementState : EnemyMovementState
                 }
             }
         }
+        Rotate(agent.velocity.normalized);
+        agent.SetDestination(stateMachine.Current.TargetTrans.position);
     }
     #endregion
 }

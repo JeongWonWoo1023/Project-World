@@ -12,7 +12,7 @@ public class EnemySelectionPathMovementState : EnemyMovementState
     public override void Enter()
     {
         base.Enter();
-        targetDirection = GetMovementHorizontalDirection(stateMachine.Enemy.transform.position, stateMachine.Enemy.RoutinePath[stateMachine.Current.PathCount], out _);
+        stateMachine.Current.KeepAgentVelocity = GetMovementHorizontalDirection(stateMachine.Enemy.transform.position, stateMachine.Enemy.RoutinePath[stateMachine.Current.PathCount], out _);
     }
 
     public override void Exit()
@@ -27,16 +27,16 @@ public class EnemySelectionPathMovementState : EnemyMovementState
     protected override void Move()
     {
         base.Move();
-        targetDirection = GetMovementHorizontalDirection(stateMachine.Enemy.transform.position, stateMachine.Enemy.RoutinePath[stateMachine.Current.PathCount], out float distance);
+        stateMachine.Current.KeepAgentVelocity = GetMovementHorizontalDirection(stateMachine.Enemy.transform.position, stateMachine.Enemy.RoutinePath[stateMachine.Current.PathCount], out float distance);
         Vector3 currentDirection = stateMachine.Current.Direction;
 
-        if (currentDirection != targetDirection)
+        if (currentDirection != stateMachine.Current.KeepAgentVelocity)
         {
             // 다음 이동 방향으로 회전
-            Rotate(targetDirection);
+            Rotate(stateMachine.Current.KeepAgentVelocity);
         }
 
-        stateMachine.Current.Direction = targetDirection;
+        stateMachine.Current.Direction = stateMachine.Current.KeepAgentVelocity;
         // 이동속도 값 대입 필요
         agent.SetDestination(stateMachine.Enemy.RoutinePath[stateMachine.Current.PathCount]);
         UpdatePath(distance);

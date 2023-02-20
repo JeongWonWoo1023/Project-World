@@ -87,9 +87,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "GetItem",
+                    "name": "Interaction",
                     "type": "Button",
                     "id": "b24730ee-5f22-4571-93ba-92139eeafaf0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "UltimadomSkiil",
+                    "type": "Button",
+                    "id": "12f5e1c3-6453-47a8-8d0c-9190557c7f5b",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -269,7 +278,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "GetItem",
+                    "action": "Interaction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "18d12644-d946-4259-8cf2-c04cb9ae9d07",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UltimadomSkiil",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -296,6 +316,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Cursor",
+                    "type": "Button",
+                    "id": "07830731-a7ae-4ac1-9477-8ef66b247638",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -318,6 +347,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Inventory",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2027be3c-0779-421d-9c5b-b1156d286c60",
+                    "path": "<Keyboard>/leftAlt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cursor",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

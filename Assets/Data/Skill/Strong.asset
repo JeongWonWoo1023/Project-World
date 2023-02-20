@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad58bf4d26910f04da239ea0565f63de, type: 3}
+  m_Name: Strong
+  m_EditorClassIdentifier: 
+  <Effect>k__BackingField: {fileID: 5888754709747166337, guid: e60d36cff17a1ce4db49ef54f9e72f61, type: 3}
+  <HitCount>k__BackingField: 4
+  <Damages>k__BackingField:
+  - 2.4
+  - 1.4
+  - 1.4
+  - 1.7
+  <Sounds>k__BackingField:
+  - {fileID: 8300000, guid: 68e606f1b69bf3b4fbefec3aff9ba4f3, type: 3}
+  - {fileID: 8300000, guid: e8195fbae4d5ccd42bd3d87339f6cd0b, type: 3}
+  - {fileID: 8300000, guid: e8195fbae4d5ccd42bd3d87339f6cd0b, type: 3}
+  - {fileID: 8300000, guid: e8195fbae4d5ccd42bd3d87339f6cd0b, type: 3}

@@ -21,7 +21,7 @@ public class EnemyRandomPathMovementState : EnemyMovementState
     {
         for(int i = 0; i < 30; ++i)
         {
-            Vector3 point = stateMachine.Current.SpawnPoint + Random.insideUnitSphere * range;
+            Vector3 point = stateMachine.Enemy.SpawnPoint.transform.position + Random.insideUnitSphere * range;
             NavMeshHit hit;
             if(NavMesh.SamplePosition(point,out hit,1.0f,NavMesh.AllAreas))
             {
@@ -36,16 +36,16 @@ public class EnemyRandomPathMovementState : EnemyMovementState
     protected override void Move()
     {
         base.Move();
-        targetDirection = GetMovementHorizontalDirection(stateMachine.Enemy.transform.position, currentPath, out float distance);
+        stateMachine.Current.KeepAgentVelocity = GetMovementHorizontalDirection(stateMachine.Enemy.transform.position, currentPath, out float distance);
         Vector3 currentDirection = stateMachine.Current.Direction;
 
-        if (currentDirection != targetDirection)
+        if (currentDirection != stateMachine.Current.KeepAgentVelocity)
         {
             // 다음 이동 방향으로 회전
-            Rotate(targetDirection);
+            Rotate(stateMachine.Current.KeepAgentVelocity);
         }
 
-        stateMachine.Current.Direction = targetDirection;
+        stateMachine.Current.Direction = stateMachine.Current.KeepAgentVelocity;
         // 이동속도 값 대입 필요
         agent.SetDestination(currentPath);
         UpdatePath(distance);

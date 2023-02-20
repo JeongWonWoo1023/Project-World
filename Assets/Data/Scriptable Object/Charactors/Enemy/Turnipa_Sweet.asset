@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4971fe4a90d07ab4fbfdcde56a458c08, type: 3}
   m_Name: Turnipa_Sweet
   m_EditorClassIdentifier: 
+  <EnemyName>k__BackingField: "\uC232\uC2AC\uB77C\uC784"
   <DefualtStatus>k__BackingField:
     <Experience>k__BackingField:
       <Level>k__BackingField: 2
@@ -88,3 +89,4 @@ MonoBehaviour:
   <TargetMask>k__BackingField:
     serializedVersion: 2
     m_Bits: 64
+  <HitSound>k__BackingField: {fileID: 8300000, guid: a8f2ecc111823a449bc0a4d11fc3117e, type: 3}

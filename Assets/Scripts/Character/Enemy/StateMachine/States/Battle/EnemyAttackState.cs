@@ -31,7 +31,7 @@ public class EnemyAttackState : EnemyBattleState
     public override void OnAnimationExit()
     {
         base.OnAnimationExit();
-        stateMachine.ChangeState(stateMachine.TargetChasingMove);
+        stateMachine.ChangeState(stateMachine.Idle);
     }
     #endregion
 }

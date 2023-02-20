@@ -37,36 +37,41 @@ public class PlayerNormalAttackState : PlayerBattleState
         StopAnimation(stateMachine.Player.AnimationData.NormalAttackParameterHash);
     }
 
+    public override void OnAnimationAttackEvent()
+    {
+        base.OnAnimationAttackEvent();
+        isInput = false;
+        UpdateTargetRotation(GetInputDirection());
+        stateMachine.Player.Rigid.MoveRotation(Quaternion.Euler(stateMachine.Current.CurrentTargetRotation));
+    }
+
     // 판정
     public override void OnAnimationEnter()
     {
         base.OnAnimationEnter();
 
-        // 최대 공격 횟수 까지 ( 임시 테스트용 )
+        // 최대 공격 횟수 까지
         // 공격 횟수, 데미지 계수 등 데이터 필요
-        if (attackCount < 5)
-        {
-            // 최초 공격 시
-            if (attackCount == 0)
-            {
-                stateMachine.Player.SkiilDamageCoef = 1.3f; // 스킬 퍼뎀 초기화
-            }
-            else
-            {
-                stateMachine.Player.SkiilDamageCoef *= 1.05f; // 가중치 부여
-            }
-            stateMachine.Player.AttackTarget(); // 공격
-        }
+
+        stateMachine.Player.SkiilDamageCoef = stateMachine.Player.NormalAttack.Damages[attackCount];
+
+        Transform hand = stateMachine.Player.Hand.transform;
+        Quaternion rotation = Quaternion.LookRotation(hand.up,hand.forward);
+        Effect effect = ObjectPool.Instance.PopObject<Effect>(stateMachine.Player.NormalAttack.Effect.name,
+            stateMachine.Player.transform.position + Vector3.up,
+            rotation);
+        SoundManager.Instance.soundEffectSource.PlayOneShot(stateMachine.Player.NormalAttack.Sounds[attackCount]);
+        effect.particle.Play();
+        stateMachine.Player.AttackTarget(stateMachine.Player.NormalAttack.Effect.range.radius); // 공격
     }
 
     // 전이
     public override void OnAnimationTransition()
     {
         base.OnAnimationTransition();
-        if(isInput)
+        if (isInput)
         {
             SetAnimationValueFromHash(stateMachine.Player.AnimationData.NormalComboCountParameterHash, ++attackCount);
-            isInput = false;
         }
     }
 
@@ -75,7 +80,6 @@ public class PlayerNormalAttackState : PlayerBattleState
     {
         base.OnAnimationExit();
 
-        SetAnimationValueFromHash(stateMachine.Player.AnimationData.NormalComboCountParameterHash, attackCount);
         StopAnimation(stateMachine.Player.AnimationData.NormalAttackParameterHash);
         // 상태 전환
         stateMachine.ChangeState(stateMachine.Idle);
@@ -86,24 +90,41 @@ public class PlayerNormalAttackState : PlayerBattleState
     protected override void AddInputAction()
     {
         base.AddInputAction();
-        stateMachine.Player.Input.InGameActions.NormalAttack.performed += OnNormalAtack;
+        stateMachine.Player.Input.InGameActions.NormalAttack.started += OnNormalAtackAction;
+        stateMachine.Player.Input.InGameActions.NormalAttack.performed += OnMovementPerformed;
+        stateMachine.Player.Input.InGameActions.StrongAttack.performed += OnStrongAttack;
+        stateMachine.Player.Input.InGameActions.UltimadomSkiil.performed += OnUltimadom;
     }
 
     protected override void RemoveInputAction()
     {
         base.RemoveInputAction();
-        stateMachine.Player.Input.InGameActions.NormalAttack.performed -= OnNormalAtack;
+        stateMachine.Player.Input.InGameActions.NormalAttack.started -= OnNormalAtackAction;
+        stateMachine.Player.Input.InGameActions.NormalAttack.performed -= OnMovementPerformed;
+        stateMachine.Player.Input.InGameActions.StrongAttack.performed -= OnStrongAttack;
+        stateMachine.Player.Input.InGameActions.UltimadomSkiil.performed -= OnUltimadom;
     }
     #endregion
 
     #region 입력 메소드
-    protected override void OnNormalAtack(InputAction.CallbackContext context)
+    protected override void OnNormalAtackAction(InputAction.CallbackContext context)
     {
-        if(isInput || UIManager.Instance.IsPause)
-        {
-            return;
-        }
         isInput = true;
+    }
+
+    protected override void OnMovementPerformed(InputAction.CallbackContext context)
+    {
+
+    }
+
+    protected override void OnStrongAttack(InputAction.CallbackContext obj)
+    {
+        stateMachine.ChangeState(stateMachine.StrongAttack);
+    }
+
+    protected override void OnUltimadom(InputAction.CallbackContext context)
+    {
+        base.OnUltimadom(context);
     }
     #endregion
 }
