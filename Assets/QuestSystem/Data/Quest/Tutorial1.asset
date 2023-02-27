@@ -23,6 +23,7 @@ MonoBehaviour:
     ItemCount: 
     EXP: 1000
     Gold: 500
+  startTalk: {fileID: 11400000, guid: 70b4a5c422c98f741b89512c971e4d85, type: 2}
   Goals:
   - {fileID: 11400000, guid: 6692b4df068521645a778803ccf63557, type: 2}
   <State>k__BackingField: 0

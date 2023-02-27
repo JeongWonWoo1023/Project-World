@@ -175,7 +175,7 @@ MonoBehaviour:
     m_Bits: 64
   weapon: {fileID: 5585814147435582385}
   <Data>k__BackingField: {fileID: 11400000, guid: 8427f7ff4d3d13644a5ade3d4697bdd0, type: 2}
-  <DropTable>k__BackingField: {fileID: 0}
+  <DropTable>k__BackingField: {fileID: 11400000, guid: 6dd3276efe27b514db718e85070590a0, type: 2}
   <FindTargetUtility>k__BackingField: {fileID: 98514582846297175}
   <AttackTimeUtil>k__BackingField:
     <CoolTime>k__BackingField:

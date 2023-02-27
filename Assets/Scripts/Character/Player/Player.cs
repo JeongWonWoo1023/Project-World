@@ -71,9 +71,9 @@ public class Player : CharacterBattle
 
         // 스탯 초기화
         PlayerSaveData data = LoadStatus();
-        if(data.nickName == string.Empty)
+        if(data == null)
         {
-            nickName = "닉네임설정은최대12글자까지";
+            nickName = "닉네임은최대12글자까지";
         }
         else
         {

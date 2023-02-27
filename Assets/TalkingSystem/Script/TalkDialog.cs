@@ -8,10 +8,20 @@ public class TalkDialog : MonoBehaviour
     public TMPro.TMP_Text Content;
     public TMPro.TMP_Text NPCName;
     public Button AutoButton;
+    public Animator autoAnim;
     public Button SkipButton;
     public AudioClip textSound;
     [HideInInspector] public bool IsSkip; // 스킵 여부
-    [HideInInspector] public bool IsAuto; // 자동 진행 여부
+    private bool _isAuto;
+    public bool IsAuto // 자동 진행 여부
+    {
+        get => _isAuto;
+        set
+        {
+            _isAuto = value;
+            autoAnim.SetBool("Selected", IsAuto);
+        }
+    }
     [HideInInspector] public bool IsNext; // 다음 텍스트로 넘겼는지 여부
     Coroutine coPrintText = null;
 
@@ -36,11 +46,12 @@ public class TalkDialog : MonoBehaviour
             });
     }
 
-    public IEnumerator Talk<T>(T talkData, string name, Quest quest = null) where T : Talk
+    public IEnumerator Talk(Talk talkData, string name, Quest quest = null)
     {
         // 대화 내용 출력
         // 퀘스트 스크립트 출력
         int index = 0;
+        talkData.IsEnd = false;
         UIManager.Instance.IsTalk = true;
         yield return new WaitForSeconds(0.2f);
         // 대화 로직 실행
@@ -66,6 +77,7 @@ public class TalkDialog : MonoBehaviour
             quest.Start();
         }
         IsSkip = false;
+        talkData.IsEnd = true;
     }
 
     private void CheckCoroutineNull(string text)

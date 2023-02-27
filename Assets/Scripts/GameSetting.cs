@@ -31,7 +31,7 @@ public class GameSetting : Popup
                 UpdateOptionSlot(OptionController.OptionCategory.Graphic);
             });
 
-        exit.onClick.AddListener(() => UIManager.Instance.CloaePopup());
+        exit.onClick.AddListener(() => UIManager.Instance.ClosePopup());
 
         CloseAction = () =>
         {

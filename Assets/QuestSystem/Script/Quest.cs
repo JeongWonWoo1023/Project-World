@@ -47,6 +47,7 @@ public class Quest : ScriptableObject
         protected string Description;
         public int CurrentAmount { get; protected set; }
         public int RequireAmount = 1;
+        public QuestGoal requireGoal;
 
         public bool Completed { get; protected set; }
         [HideInInspector] public UnityEvent GoalCompleted;
@@ -71,6 +72,21 @@ public class Quest : ScriptableObject
             GoalCompleted = new UnityEvent();
         }
 
+        public virtual IEnumerator WaitRequire()
+        {
+            WaitForEndOfFrame delay = new WaitForEndOfFrame();
+            if(requireGoal == null)
+            {
+                StartAction?.Invoke();
+                yield break;
+            }
+            while(!requireGoal.Completed)
+            {
+                yield return delay;
+            }
+            StartAction?.Invoke();
+        }
+
         protected void Evaluate()
         {
             // 완료여부 체크
@@ -89,6 +105,7 @@ public class Quest : ScriptableObject
         }
     }
 
+    public Talk startTalk;
     public List<QuestGoal> Goals;
     [field: SerializeField] public QuestState State { get; protected set; }
     [HideInInspector] public UnityEvent QuestCompleted;
@@ -132,7 +149,7 @@ public class Quest : ScriptableObject
         }
         foreach (QuestGoal goal in Goals)
         {
-            goal.StartAction?.Invoke();
+            QuestManager.Instance.StartCoroutine(goal.WaitRequire());
         }
         Debug.Log("퀘스트 시작");
     }

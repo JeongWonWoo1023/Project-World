@@ -27,12 +27,24 @@ public class Inventory : Popup
     [field: Header("컴포넌트")]
     [field: SerializeField] public Transform SlotList { get; private set; }
     [field: SerializeField] public Transform Rank { get; private set; }
+    [field: SerializeField] public CanvasGroup Description { get; private set; }
 
     [field: Header("설정")]
     [field: SerializeField] public int MaxWeight { get; private set; } = 2000;
 
     public float TotalBagWeight { get; private set; }
-    public int Gold { get; set; }
+
+    private int _gold;
+    public int Gold
+    {
+        get => _gold;
+        set
+        {
+            _gold = value;
+            GoldText.text = string.Format("{0:#,##0}",Gold).ToString();
+            SaveInventory();
+        }
+    }
 
     private List<ItemSlot> slots = new List<ItemSlot>();
     private string slotResourcePath = "Prefabs/UI/Slot";
@@ -63,6 +75,16 @@ public class Inventory : Popup
     private void BindButtonEvent()
     {
         // 버튼 이벤트 바인딩
+
+        Exit.onClick.AddListener(
+            () =>
+            {
+                if(!UIManager.Instance.IsPause && Time.timeScale < 1)
+                {
+                    Time.timeScale = 1;
+                }
+                UIManager.Instance.ClosePopup();
+            });
         for (int i = 0; i < Enum.GetValues(typeof(ItemCategory)).Length; i++)
         {
             if (IsButtonNull(Categorys[i]))
@@ -151,12 +173,17 @@ public class Inventory : Popup
             TotalBagWeight = 0;
         }
 
-        for(int i = 0; data != null && i < data.itemInfo.Count && data.itemInfo.Count != 0;++i)
+        if (data != null)
         {
-            Item item = new Item();
-            item.Info = data.itemInfo[i];
-            item.Status = data.itemStatus[i].status;
-            ShowItem(item, data.itemCount[i]);
+            Gold = data.gold;
+
+            for (int i = 0; i < data.itemInfo.Count && data.itemInfo.Count != 0; ++i)
+            {
+                Item item = new Item();
+                item.Info = data.itemInfo[i];
+                item.Status = data.itemStatus[i].status;
+                ShowItem(item, data.itemCount[i]);
+            }
         }
         UpdateBagWeight((int)TotalBagWeight, MaxWeight);
     }
@@ -174,13 +201,15 @@ public class Inventory : Popup
             {
                 ItemTotalStatusName.gameObject.SetActive(true);
                 ItemTotalStatusValue.gameObject.SetActive(true);
+                DetailStatus.gameObject.SetActive(true);
             }
             else
             {
                 ItemTotalStatusName.gameObject.SetActive(false);
                 ItemTotalStatusValue.gameObject.SetActive(false);
+                DetailStatus.gameObject.SetActive(false);
             }
-            ItemEffectDescription.text = slot.Item.Info.EffectDescription;
+            ItemEffectDescription.text = slot.Item.Info.Tooltip;
             ItemDescription.text = slot.Item.Info.ItemDescription;
             UpdateItemRank(slot);
         });
@@ -231,6 +260,15 @@ public class Inventory : Popup
             }
             slot.gameObject.SetActive(false);
         }
+
+        if(slotCount == 0)
+        {
+            Description.alpha = 0;
+        }
+        else if (Description.alpha < 1)
+        {
+            Description.alpha = 1;
+        }
     }
 
     public Item FindItem(Item item)
@@ -280,7 +318,7 @@ public class Inventory : Popup
             data.itemStatus.Add(new ItemUpgradeData(slot.Item.Status));
             data.itemCount.Add(slot.ItemCount);
         }
-        data.gold = 0; // 임시값 ( 게임 중앙 매니저에서 가져와야 함 )
+        data.gold = Gold;
         DataManager.Instance.SaveJson(data, typeof(InventorySaveData).Name);
     }
 

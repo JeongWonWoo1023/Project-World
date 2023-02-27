@@ -9,6 +9,7 @@ public class UIManager : Singleton<UIManager>
     [field: SerializeField] public Transform Canvas { get; private set; }
     [field: SerializeField] public Message MessageBox { get; private set; }
     [field: SerializeField] public Inventory Inventory { get; private set; }
+    [field: SerializeField] public Shop shop { get; private set; }
     [field: SerializeField] public TalkDialog TalkDialog { get; private set; }
     [field: SerializeField] public GameSetting Setting { get; private set; }
     [field: SerializeField] public Animator UIAnimator { get; private set; }
@@ -71,14 +72,8 @@ public class UIManager : Singleton<UIManager>
         set
         {
             _isTalk = value;
-            if(IsTalk)
-            {
-                IsCursor = true;
-            }
-            else
-            {
-                IsCursor = false;
-            }
+            IsCursor = IsTalk;
+            Player.CameraInput.enabled = !IsTalk;
             UIAnimator.SetBool(AnimationKeyward.OpneTalkKey, IsTalk);
         }
     }
@@ -140,10 +135,18 @@ public class UIManager : Singleton<UIManager>
         return true;
     }
 
-    public bool CloaePopup()
+    public void OpenPopup(Popup target)
+    {
+        target.isOpne = true;
+        target.index = PopupStack.Count;
+        target.Open();
+        PopupStack.Push(target);
+    }
+
+    public bool ClosePopup()
     {
         // 스택 최상위에 있는 팝업 닫기
-        if(_popupStack.Count == 0)
+        if (_popupStack.Count == 0)
         {
             return false;
         }

@@ -7,6 +7,9 @@ public class Popup : MonoBehaviour
     public UnityAction OpneAction { get; protected set; }
     public UnityAction CloseAction { get; protected set; }
 
+    public int index;
+    public bool isOpne;
+
     protected bool FindEventAction(string actionName, Button button)
     {
         // 메소드가 이미 등록되어있는지 검사 메소드
@@ -30,5 +33,15 @@ public class Popup : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    public virtual void Open()
+    {
+
+    }
+
+    public virtual void Close()
+    {
+
     }
 }

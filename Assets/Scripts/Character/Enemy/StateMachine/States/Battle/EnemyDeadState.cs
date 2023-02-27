@@ -21,13 +21,14 @@ public class EnemyDeadState : EnemyBattleState
         stateMachine.Current.IsDead = true;
         for(int i = 0; i < stateMachine.Enemy.DropTable.DropItem.Length; ++i)
         {
-            if(stateMachine.Enemy.DropTable.DropRatio[i] < Random.Range(0,101))
+            if(stateMachine.Enemy.DropTable.DropRatio[i] >= Random.Range(0,101))
             {
                 Item drop = ObjectPool.Instance.PopObject<Item>(stateMachine.Enemy.DropTable.DropItem[i].name,
-                    stateMachine.Enemy.transform.position, stateMachine.Enemy.transform.rotation);
+                    stateMachine.Enemy.transform.position + Vector3.up, stateMachine.Enemy.transform.rotation);
                 drop.Count = stateMachine.Enemy.DropTable.DropCount[i];
             }
         }
+        UIManager.Instance.Inventory.Gold += stateMachine.Enemy.DropTable.DropGold;
         stateMachine.Enemy.gameObject.SetActive(false);
     }
 }

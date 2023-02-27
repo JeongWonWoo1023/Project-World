@@ -38,12 +38,12 @@ public class SoundMod : DropdownController
         message.OkText = "취소";
         message.OkAction = () =>
         {
-            UIManager.Instance.CloaePopup();
+            UIManager.Instance.ClosePopup();
             Application.Quit();
         };
         message.CancleAction = () =>
         {
-            UIManager.Instance.CloaePopup();
+            UIManager.Instance.ClosePopup();
             dropdown.value = optionNumber;
         };
 

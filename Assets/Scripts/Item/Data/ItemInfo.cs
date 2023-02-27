@@ -26,7 +26,7 @@ public struct ItemInfo
     [field: SerializeField] public string Name { get; private set; }  // 아이템 이름
     [field: SerializeField] public string Type { get; private set; }  // 아이템 타입 ( 한손검, 회복물약, 버프 음식 등등 )
     [field: SerializeField] public string ItemDescription { get; private set; }  // 아이템 설명
-    [field: SerializeField] public string EffectDescription { get; private set; }  // 아이템 효과 설명
+    [field: SerializeField] public string Tooltip { get; private set; }  // 아이템 효과 설명
 
     [field: SerializeField] public ItemRank Rank { get; private set; }  // 아이템 등급
     [field: SerializeField] public int Level { get; private set; }  // 아이템 업그레이드 레벨

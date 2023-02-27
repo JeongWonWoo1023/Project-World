@@ -117,6 +117,9 @@ public class CharacterBattle : MonoBehaviour, IBattle
         int temp = CurrentEXP - status.Experience.Point;
         Level++;
         status.Experience.Point = (int)(status.Experience.Point * 1.5f);
+        status.Attack.UpdateStatus();
+        status.Defence.UpdateStatus();
+        status.Health.UpdateStatus();
         CurrentEXP = temp;
     }
 

@@ -59,7 +59,7 @@ public class P_StoppingState : PlayerGroundedState
     {
         base.RemoveInputAction();
 
-        stateMachine.Player.Input.InGameActions.Movement.started += OnMovementStarted;
+        stateMachine.Player.Input.InGameActions.Movement.started -= OnMovementStarted;
     }
     #endregion
 

@@ -110,7 +110,10 @@ public class NearObjectDetector : DetectorSensorRequire
             Inventory.AddItem(item, count);
         }
         item.gameObject.SetActive(false);
-        item.SpawnPoint.IsGet = true;
+        if(item.SpawnPoint != null)
+        {
+            item.SpawnPoint.IsGet = true;
+        }
         ItemList.Remove(item);
     }
 

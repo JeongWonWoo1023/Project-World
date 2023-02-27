@@ -77,7 +77,7 @@ public class Message : Popup
         format.CancleAction = () =>
         {
             // 취소버튼 액션 로직
-            UIManager.Instance.CloaePopup();
+            UIManager.Instance.ClosePopup();
         };
         format.OkAction = () => Application.Quit();
 

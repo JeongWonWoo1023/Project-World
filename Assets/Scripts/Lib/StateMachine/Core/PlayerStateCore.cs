@@ -133,21 +133,23 @@ public class PlayerStateCore : StateCore
     #region 입력 메소드
     private void OnEscapeAction(InputAction.CallbackContext context)
     {
+        if(UIManager.Instance.IsTalk)
+        {
+            return;
+        }
+
         if(UIManager.Instance.PopupStack.Count > 1)
         {
-            UIManager.Instance.CloaePopup();
+            UIManager.Instance.ClosePopup();
             return;
         }
 
         if (UIManager.Instance.PopupStack.Count == 1)
         {
-            UIManager.Instance.CloaePopup();
-            stateMachine.Player.CameraInput.enabled = true;
-            stateMachine.Player.Input.InGameActions.Enable();
+            UIManager.Instance.ClosePopup();
             if(!UIManager.Instance.IsPause)
             {
-                UIManager.Instance.IsCursor = false;
-                Time.timeScale = 1;
+                SetOption(true, true, false, 1);
             }
             return;
         }
@@ -156,25 +158,34 @@ public class PlayerStateCore : StateCore
         {
             // 일시정지 상태일 경우
             UIManager.Instance.IsPause = false;
-            stateMachine.Player.CameraInput.enabled = true;
-            stateMachine.Player.Input.InGameActions.Enable();
-            UIManager.Instance.IsCursor = false;
-            Time.timeScale = 1;
+            SetOption(true, true, false, 1);
         }
         else
         {
             // 일시정지 상태가 아닌 경우
             UIManager.Instance.IsPause = true;
-            stateMachine.Player.CameraInput.enabled = false;
-            stateMachine.Player.Input.InGameActions.Disable();
-            UIManager.Instance.IsCursor = true;
-            Time.timeScale = 0;
+            SetOption(false, false, true, 0);
         }
+    }
+
+    private void SetOption(bool cameraEnabled, bool isIngame, bool cursor, int timeScale)
+    {
+        stateMachine.Player.CameraInput.enabled = cameraEnabled;
+        if(isIngame)
+        {
+            stateMachine.Player.Input.InGameActions.Enable();
+        }
+        else
+        {
+            stateMachine.Player.Input.InGameActions.Disable();
+        }
+        UIManager.Instance.IsCursor = cursor;
+        Time.timeScale = timeScale;
     }
 
     private void OnInventoryAction(InputAction.CallbackContext context)
     {
-        if(UIManager.Instance.IsPause)
+        if(UIManager.Instance.IsPause || UIManager.Instance.IsTalk)
         {
             return;
         }
@@ -182,7 +193,7 @@ public class PlayerStateCore : StateCore
         {
             for(int i = UIManager.Instance.PopupStack.Count; i > 0; --i)
             {
-                UIManager.Instance.CloaePopup();
+                UIManager.Instance.ClosePopup();
             }
             stateMachine.Player.CameraInput.enabled = true;
             stateMachine.Player.Input.InGameActions.Enable();
@@ -212,6 +223,10 @@ public class PlayerStateCore : StateCore
     private void OnGetItemAction(InputAction.CallbackContext context)
     {
         stateMachine.Player.NearDetector.GetItem();
+        if(stateMachine.Player.NearDetector.NPCList.Count == 0)
+        {
+            return;
+        }
         if(UIManager.Instance.IsTalk)
         {
             UIManager.Instance.TalkDialog.IsNext = true;

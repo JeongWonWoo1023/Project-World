@@ -23,9 +23,10 @@ MonoBehaviour:
     ItemCount: 
     EXP: 1500
     Gold: 500
+  startTalk: {fileID: 11400000, guid: dadfe3e15da9de240bdcac1f86f8d9e5, type: 2}
   Goals:
   - {fileID: 11400000, guid: 1841571da0e59664d98cdb6b02c9f553, type: 2}
-  <State>k__BackingField: 0
+  <State>k__BackingField: 1
   QuestCompleted:
     m_PersistentCalls:
       m_Calls: []

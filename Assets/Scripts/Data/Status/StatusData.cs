@@ -37,6 +37,11 @@ public class AttackStatus
 
     [field: SerializeField][field: Tooltip("치명타 확률")] public float CriticalProbability { get; set; } = 0.0f;
     [field: SerializeField][field: Tooltip("치명타 데미지 계수")] public float CriticalDamageCoef { get; set; } = 1.5f;
+
+    public void UpdateStatus()
+    {
+        Defualt += Coef;
+    }
 }
 
 [Serializable]
@@ -47,6 +52,12 @@ public class DefenceStatus
 
     [field: SerializeField][field: Tooltip("기본 마법 저항력")] public float DefualtMagical { get; set; } = 8.0f;
     [field: SerializeField][field: Tooltip("레벨당 마법 저항력 계수")] public float MagicalCoef { get; set; } = 0.5f;
+
+    public void UpdateStatus()
+    {
+        DefualtPhysical += PhysicalCoef;
+        DefualtMagical += MagicalCoef;
+    }
 }
 
 [Serializable]
@@ -57,4 +68,10 @@ public class HealthStatus
 
     [field: SerializeField][field: Tooltip("기본 마나")] public int MaxMp { get; set; } = 300;
     [field: SerializeField][field: Tooltip("레벨당 마나 증가량")] public int MpCoef { get; set; } = 10;
+
+    public void UpdateStatus()
+    {
+        MaxHp += HpCoef;
+        MaxMp += MpCoef;
+    }
 }

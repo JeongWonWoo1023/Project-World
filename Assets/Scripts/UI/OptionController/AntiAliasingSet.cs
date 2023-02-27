@@ -41,13 +41,13 @@ public class AntiAliasingSet : DropdownController
         switch (type)
         {
             case AntialiasingMode.None:
-                QualitySettings.antiAliasing = (int)AntialiasingMode.None;
+                QualitySettings.antiAliasing = (int)AntialiasingMode.None * 2;
                 break;
             case AntialiasingMode.FastApproximateAntialiasing:
-                QualitySettings.antiAliasing = (int)AntialiasingMode.FastApproximateAntialiasing;
+                QualitySettings.antiAliasing = (int)AntialiasingMode.FastApproximateAntialiasing * 2;
                 break;
             case AntialiasingMode.SubpixelMorphologicalAntiAliasing:
-                QualitySettings.antiAliasing = (int)AntialiasingMode.SubpixelMorphologicalAntiAliasing;
+                QualitySettings.antiAliasing = (int)AntialiasingMode.SubpixelMorphologicalAntiAliasing * 2;
                 break;
         }
     }

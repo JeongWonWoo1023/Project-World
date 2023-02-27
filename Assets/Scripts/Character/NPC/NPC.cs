@@ -29,7 +29,7 @@ public class NPC : MonoBehaviour
 
     [field: Header("대화")]
     [field: SerializeField] public Talk CommonTalkData { get; private set; }
-    [field: SerializeField] public QuestTalk[] QuestTalkData { get; private set; }
+    public Talk QuestEndTalk;
 
     private NPCNameUI enableNameUI;
     private QuestUI enableQuestUI;
@@ -59,18 +59,17 @@ public class NPC : MonoBehaviour
     public void Talk()
     {
         // 대화
-        foreach(Quest quest in QuestList)
+        if(QuestEndTalk != null)
         {
-            if(quest.State == Quest.QuestState.CanStart)
+            StartCoroutine(UIManager.Instance.TalkDialog.Talk(QuestEndTalk, Info.Name));
+        }
+
+        foreach (Quest quest in QuestList)
+        {
+            if (quest.State == Quest.QuestState.CanStart)
             {
-                foreach(QuestTalk data in QuestTalkData)
-                {
-                    if(data.Quest.Info.Name.Equals(quest.Info.Name))
-                    {
-                        StartCoroutine(UIManager.Instance.TalkDialog.Talk(data, Info.Name, quest));
-                        return;
-                    }
-                }
+                StartCoroutine(UIManager.Instance.TalkDialog.Talk(quest.startTalk, Info.Name, quest));
+                return;
             }
         }
     }

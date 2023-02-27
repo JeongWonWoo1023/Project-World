@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f49e9e8fe93207d4e93eab7b4cf647cb, type: 3}
+  m_Script: {fileID: 11500000, guid: 4ba59b4083d57f74cb3fc4273379c515, type: 3}
   m_Name: Tutorial2Talk
   m_EditorClassIdentifier: 
   <TalkText>k__BackingField:
@@ -38,4 +38,3 @@ MonoBehaviour:
     \uB9C8\uC744\uC744 \uB098\uAC00\uC2DC\uBA74 \uBAAC\uC2A4\uD130\uB4E4\uC774 \uC788\uC2B5\uB2C8\uB2E4\n\uC774
     \uADFC\uBC29\uC5D0\uC11C \uAC00\uC7A5 \uC57D\uD55C \uBAAC\uC2A4\uD130\uC778 \uBE0C\uB77C\uC6B4\uB798\uBE44
     3\uB9C8\uB9AC\uB97C \uC0AC\uB0E5\uD558\uACE0 \uC624\uC138\uC694"
-  Quest: {fileID: 11400000, guid: a2e795275329e1641b4dd620c4a7500d, type: 2}
