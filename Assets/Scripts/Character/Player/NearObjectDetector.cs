@@ -8,12 +8,6 @@ public class NearObjectDetector : DetectorSensorRequire
     public List<Item> ItemList { get; private set; } = new List<Item>(); // 플레이어 근처에 있는 아이템 리스트
     public List<NPC> NPCList { get; private set; } = new List<NPC>(); // 플레이어 근처에 있는 NPC 리스트
 
-    public void ViewItemUI()
-    {
-        // 아이템 오브젝트에 가까이 가면 아이템 UI출력
-
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         ItemEnter(other);
